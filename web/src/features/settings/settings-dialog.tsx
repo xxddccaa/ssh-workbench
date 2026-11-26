@@ -345,6 +345,13 @@ function SecuritySection({
           ? '已开启本机 ~/.ssh/config 自动识别、ProxyCommand 与本地私钥读取，支持软链接。'
           : '服务不读取所在机器的 ~/.ssh 文件。请在浏览器中选择私钥文件，或粘贴配置内容导入。'}
       </Capability>
+      <Capability icon={SquareTerminal} title="本机终端 (PTY)" enabled={capabilities?.localTerminal}>
+        {capabilities?.localTerminal
+          ? '支持在工作区直接打开运行本机默认 Shell（macOS / Linux PTY）的终端标签页。'
+          : auth.remote
+            ? '远程模式已禁用本机终端，防止通过浏览器直接执行服务端本机 Shell。'
+            : '当前运行环境或操作系统暂不支持内置本地终端。'}
+      </Capability>
       {authRequired && (
         <div className="info-box">
           <Info size={19} />

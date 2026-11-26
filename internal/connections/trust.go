@@ -34,11 +34,15 @@ type Transport interface {
 	Alive() bool
 }
 
+const LocalHostID = "local:shell"
+
 type Target struct {
 	Owner       string
 	Host        hosts.Profile
 	Credentials Credentials
 	Jump        *Hop
+	// Local indicates a local OS shell session rather than an SSH target.
+	Local bool
 	// Interaction is set only while a user is present in a connection
 	// attempt. Background re-dials leave it nil, so they can never accept a
 	// new host key or answer a challenge on the user's behalf.

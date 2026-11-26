@@ -9,8 +9,10 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
+	"sshworkbench/internal/adapters/localpty"
 	"sshworkbench/internal/adapters/platform"
 	"sshworkbench/internal/adapters/sqlite"
 	"sshworkbench/internal/adapters/sshtransport"
@@ -18,6 +20,7 @@ import (
 	"sshworkbench/internal/connections"
 	"sshworkbench/internal/control"
 	"sshworkbench/internal/credentials"
+	"sshworkbench/internal/fault"
 	"sshworkbench/internal/files"
 	"sshworkbench/internal/hosts"
 	"sshworkbench/internal/imports"
@@ -49,10 +52,14 @@ type Config struct {
 }
 
 type Ready struct {
-	Origin       string
-	URL          string
-	Remote       bool
-	AuthRequired bool
+	Origin          string
+	Listen          string
+	RequestedListen string
+	URL             string
+	Version         string
+	PID             int
+	Remote          bool
+	AuthRequired    bool
 }
 
 // ErrAlreadyRunning is returned when another local server owns the data
@@ -89,17 +96,14 @@ func Run(ctx context.Context, config Config, onReady func(Ready)) error {
 		return err
 	}
 	defer store.Close()
-	var controlListener net.Listener
-	if !config.Remote {
-		controlListener, err = platform.ListenControl(config.DataDir)
-		if errors.Is(err, platform.ErrAlreadyRunning) {
-			return ErrAlreadyRunning
-		}
-		if err != nil {
-			slog.Warn("local control channel unavailable; `sshw open` and `edit` will not work", "reason", err.Error())
-		} else {
-			defer controlListener.Close()
-		}
+	controlListener, err := platform.ListenControl(config.DataDir)
+	if errors.Is(err, platform.ErrAlreadyRunning) {
+		return ErrAlreadyRunning
+	}
+	if err != nil {
+		slog.Warn("local control channel unavailable; `sshw open` and `edit` will not work", "reason", err.Error())
+	} else {
+		defer controlListener.Close()
 	}
 	passwordHash, err := store.GetSetting(ctx, "owner_password")
 	if err != nil {
@@ -116,12 +120,13 @@ func Run(ctx context.Context, config Config, onReady func(Ready)) error {
 		}
 		tlsConfiguration = &tls.Config{MinVersion: tls.VersionTLS13, Certificates: []tls.Certificate{certificate}}
 	}
-	listener, err := net.Listen("tcp", config.Listen)
+	listener, err := listenWithFallback(ctx, config.Listen, config.Remote)
 	if err != nil {
 		return err
 	}
 	defer listener.Close()
-	listenAddr := listener.Addr().String()
+	actualListen := listener.Addr().String()
+	listenAddr := actualListen
 	browserHost, port, _ := net.SplitHostPort(listenAddr)
 	if browserHost == "" || browserHost == "0.0.0.0" || browserHost == "::" {
 		listenAddr = net.JoinHostPort("127.0.0.1", port)
@@ -143,14 +148,16 @@ func Run(ctx context.Context, config Config, onReady func(Ready)) error {
 	authentication := services.Auth
 	allowAgent := !config.DisableLocalSSH && (!config.Remote || config.AllowAgent)
 	localFiles := !config.DisableLocalSSH && !config.Remote
+	localTerminal := localFiles && localpty.Supported()
 	handler, err := httpapi.New(httpapi.Config{
-		Origin:      origin,
-		DevOrigin:   config.DevOrigin,
-		Remote:      config.Remote,
-		RequireAuth: requireAuth,
-		Version:     config.Version,
-		LocalFiles:  localFiles,
-		Agent:       allowAgent,
+		Origin:        origin,
+		DevOrigin:     config.DevOrigin,
+		Remote:        config.Remote,
+		RequireAuth:   requireAuth,
+		Version:       config.Version,
+		LocalFiles:    localFiles,
+		Agent:         allowAgent,
+		LocalTerminal: localTerminal,
 	}, services, web.Assets())
 	if err != nil {
 		return err
@@ -173,10 +180,28 @@ func Run(ctx context.Context, config Config, onReady func(Ready)) error {
 		browserURL += "/#bootstrap=" + authentication.BootstrapToken()
 	}
 	if controlListener != nil {
-		go control.Serve(ctx, controlListener, &controlHandler{origin: browserOrigin, requireAuth: requireAuth, auth: authentication, documents: services.Documents})
+		go control.Serve(ctx, controlListener, &controlHandler{
+			origin:      browserOrigin,
+			listen:      actualListen,
+			version:     config.Version,
+			remote:      config.Remote,
+			requireAuth: requireAuth,
+			auth:        authentication,
+			documents:   services.Documents,
+			stop:        cancel,
+		})
 	}
 	if onReady != nil {
-		onReady(Ready{Origin: origin, URL: browserURL, Remote: config.Remote, AuthRequired: requireAuth})
+		onReady(Ready{
+			Origin:          origin,
+			Listen:          actualListen,
+			RequestedListen: config.Listen,
+			URL:             browserURL,
+			Version:         config.Version,
+			PID:             os.Getpid(),
+			Remote:          config.Remote,
+			AuthRequired:    requireAuth,
+		})
 	}
 	select {
 	case err := <-failures:
@@ -206,6 +231,21 @@ type Options struct {
 	Keyring              vault.Keyring
 }
 
+type terminalRouter struct {
+	ssh          terminals.Connector
+	localEnabled bool
+}
+
+func (router terminalRouter) OpenTerminal(ctx context.Context, target connections.Target, rows, cols int) (terminals.Shell, error) {
+	if target.Local {
+		if !router.localEnabled {
+			return nil, fault.New(403, "local_terminal_disabled", "当前模式或系统不支持本地终端。")
+		}
+		return localpty.Open(ctx, rows, cols)
+	}
+	return router.ssh.OpenTerminal(ctx, target, rows, cols)
+}
+
 // Compose builds every business service and wires their lifecycles. The
 // returned function stops logins, tunnels and terminals in that order; it is
 // safe to call more than once.
@@ -216,11 +256,12 @@ func Compose(ctx context.Context, store *sqlite.Store, options Options) (httpapi
 	}
 	allowAgent := !options.DisableLocalSSH && (!options.Remote || options.AllowAgent)
 	localFiles := !options.DisableLocalSSH && !options.Remote
+	localTerminal := localFiles && localpty.Supported()
 	hostService := hosts.New(store)
 	verifier := connections.NewVerifier(store)
 	connector := sshtransport.New(verifier, sshtransport.Options{AllowAgent: allowAgent, LocalFiles: localFiles, StrictHostKeyConfirm: options.Remote || options.StrictHostKeyConfirm})
 	attempts := connections.NewAttempts(ctx)
-	terminalService := terminals.New(ctx, connector)
+	terminalService := terminals.New(ctx, terminalRouter{ssh: connector, localEnabled: localTerminal})
 	tunnelService := tunnels.New(ctx, store, connector)
 	hostService.AddReferences(tunnelService)
 	secrets := vault.New(store, keyring)
@@ -235,7 +276,7 @@ func Compose(ctx context.Context, store *sqlite.Store, options Options) (httpapi
 		Terminals:   terminalService,
 		Files:       files.New(connector, terminalService),
 		Attempts:    attempts,
-		Launch:      launch.New(hostService, credentialService, attempts, terminalService, tunnelService, sshConfigResolver),
+		Launch:      launch.New(hostService, credentialService, attempts, terminalService, tunnelService, sshConfigResolver, localTerminal),
 		Vault:       secrets,
 		Credentials: credentialService,
 		Tunnels:     tunnelService,
@@ -265,12 +306,19 @@ func Compose(ctx context.Context, store *sqlite.Store, options Options) (httpapi
 
 type controlHandler struct {
 	origin      string
+	listen      string
+	version     string
+	remote      bool
 	requireAuth bool
 	auth        *auth.Service
 	documents   *localdocs.Service
+	stop        func()
 }
 
 func (handler *controlHandler) Open() (string, error) {
+	if handler.remote {
+		return "", errors.New("远程模式下请使用密码登录。")
+	}
 	if !handler.requireAuth {
 		return handler.origin, nil
 	}
@@ -279,6 +327,22 @@ func (handler *controlHandler) Open() (string, error) {
 		return "", err
 	}
 	return handler.origin + "/#bootstrap=" + token, nil
+}
+
+func (handler *controlHandler) Status() control.Response {
+	return control.Response{
+		Origin:  handler.origin,
+		Listen:  handler.listen,
+		Version: handler.version,
+		PID:     os.Getpid(),
+		Remote:  handler.remote,
+	}
+}
+
+func (handler *controlHandler) Stop() {
+	if handler.stop != nil {
+		handler.stop()
+	}
 }
 
 func (handler *controlHandler) Edit(filename string) (string, error) {

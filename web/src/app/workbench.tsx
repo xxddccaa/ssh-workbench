@@ -38,7 +38,12 @@ import { actionFor, bindings, describe, type ActionID } from '../shared/lib/keyb
 import type { UploadItem } from '../shared/lib/upload-items'
 import { HostSidebar } from '../features/hosts/host-sidebar'
 import { HostDialog } from '../features/hosts/host-dialog'
-import { quickTargetToProfile, sshConfigToProfile } from '../features/hosts/host-helpers'
+import {
+  isLocalHost,
+  localHostProfile,
+  quickTargetToProfile,
+  sshConfigToProfile,
+} from '../features/hosts/host-helpers'
 import { ConnectionDialog } from '../features/connect/connection-dialog'
 import { useAttempt } from '../features/connect/use-attempt'
 import { TerminalController } from '../features/terminal/controller/terminal-controller'
@@ -173,6 +178,8 @@ export function Workbench({
     () => sshConfigHosts.map(sshConfigToProfile),
     [sshConfigHosts],
   )
+  const localTerminalEnabled = !!auth.capabilities?.localTerminal
+  const localProfile = useMemo(() => localHostProfile(), [])
   const currentBindings = useMemo(
     () => bindings(preferences.keybindings),
     [preferences.keybindings],
@@ -238,6 +245,7 @@ export function Workbench({
     const workspace = workspaceQuery.data
     setPreferences({ ...defaultPreferences, ...workspace.preferences })
     const known = new Map<string, HostProfile>([
+      ...(localTerminalEnabled ? [[localProfile.id, localProfile] as const] : []),
       ...sshProfiles.map((host) => [host.id, host] as const),
       ...hostsQuery.data.map((host) => [host.id, host] as const),
     ])
@@ -266,6 +274,8 @@ export function Workbench({
     sshConfigQuery.isPending,
     sshProfiles,
     auth.capabilities?.localFiles,
+    localTerminalEnabled,
+    localProfile,
   ])
   useEffect(() => {
     if (workspaceQuery.isError && !restored) setRestored(true)
@@ -382,8 +392,9 @@ export function Workbench({
     options?: { replaceKey?: string; quickConnect?: QuickConnectTarget },
   ) {
     const requiresExplicitInput =
-      (host.authMode === 'password' && !host.credentialId) ||
-      (host.authMode === 'key' && !host.identityFile && !host.credentialId)
+      !isLocalHost(host) &&
+      ((host.authMode === 'password' && !host.credentialId) ||
+        (host.authMode === 'key' && !host.identityFile && !host.credentialId))
     if (requiresExplicitInput) {
       setConnecting({ host, replaceKey: options?.replaceKey, quickConnect: options?.quickConnect })
       return
@@ -444,6 +455,10 @@ export function Workbench({
   function handleQuickConnect(target: QuickConnectTarget) {
     const profile = quickTargetToProfile(target)
     void startDirectConnect(profile, { quickConnect: target })
+  }
+
+  function openLocalTerminal() {
+    void startDirectConnect(localProfile)
   }
 
   async function closeTab(key: string) {
@@ -612,7 +627,9 @@ export function Workbench({
           {
             id: tab.session.info.id,
             name: tab.host.name,
-            address: `${tab.host.username}@${tab.host.hostname}:${tab.host.port}`,
+            address: isLocalHost(tab.host)
+              ? 'localhost (本机)'
+              : `${tab.host.username}@${tab.host.hostname}:${tab.host.port}`,
             production: !!tab.host.production,
             ready: () => tab.session?.controller.ready() ?? false,
             send: (text: string) => tab.session?.controller.sendText(text) ?? false,
@@ -643,7 +660,7 @@ export function Workbench({
           className={`pane-empty placeholder ${focused ? 'focused' : ''}`}
           onMouseDown={() => setFocusedSlot(slot)}
         >
-          <Server size={22} />
+          {isLocalHost(tab.host) ? <Terminal size={22} /> : <Server size={22} />}
           <p>{tab.host.name} · 未连接</p>
           <span>页面刷新不会恢复原有 Shell 画面，点击下方按钮新建连接。</span>
           <button
@@ -656,16 +673,18 @@ export function Workbench({
         </div>
       )
     const session = tab.session
+    const localTab = isLocalHost(tab.host)
     return (
       <TerminalPane
         key={session.info.id}
         controller={session.controller}
         title={tab.host.name}
+        protocol={localTab ? 'LOCAL' : 'SSH'}
         production={!!tab.host.production}
         focused={focused && !editor}
         searchRequest={focused ? searchRequest : 0}
         onFocus={() => setFocusedSlot(slot)}
-        onDrop={(items) => prepareUpload(tab, items)}
+        onDrop={localTab ? undefined : (items) => prepareUpload(tab, items)}
         onReconnect={() => void startDirectConnect(tab.host, { replaceKey: tab.key })}
       />
     )
@@ -692,6 +711,8 @@ export function Workbench({
             onCreate={() => setHostDialog('new')}
             onImport={() => setImporting(true)}
             onRefreshSSHConfig={() => void sshConfigQuery.refetch()}
+            localTerminal={localTerminalEnabled}
+            onLocalTerminal={openLocalTerminal}
             searchShortcut={
               currentBindings['hosts.search'] ? describe(currentBindings['hosts.search']) : ''
             }
@@ -736,6 +757,16 @@ export function Workbench({
             >
               <Plus size={15} />
             </button>
+            {localTerminalEnabled && (
+              <button
+                className="icon-button new-session"
+                title="打开本地终端"
+                aria-label="打开本地终端"
+                onClick={openLocalTerminal}
+              >
+                <Terminal size={15} />
+              </button>
+            )}
             <div className="tab-spacer" />
             {quickConnecting && (
               <div className="connecting-pill" role="status">
@@ -779,7 +810,7 @@ export function Workbench({
                   </button>
                 </div>
               )}
-              {activeSession && (
+              {active && activeSession && !isLocalHost(active.host) && (
                 <button
                   className={`topbar-chip ${filesVisible ? 'active' : ''}`}
                   aria-label="切换文件面板"
@@ -852,6 +883,8 @@ export function Workbench({
               hosts={hosts}
               sshConfigHosts={sshConfigHosts}
               version={auth.version}
+              localTerminal={localTerminalEnabled}
+              onLocalTerminal={openLocalTerminal}
               onCreate={() => setHostDialog('new')}
               onImport={() => setImporting(true)}
               onTunnels={() => setDrawer('tunnels')}
@@ -872,7 +905,7 @@ export function Workbench({
                   onDirtyChange={setDirty}
                 />
               )}
-              {active && activeSession && filesVisible && (
+              {active && activeSession && !isLocalHost(active.host) && filesVisible && (
                 <FilePanel
                   key={activeSession.info.id}
                   terminalID={activeSession.info.id}

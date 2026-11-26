@@ -609,6 +609,7 @@ export interface components {
             capabilities?: {
                 agent: boolean;
                 localFiles: boolean;
+                localTerminal: boolean;
             };
             csrfToken?: string;
             expiresAt?: string;

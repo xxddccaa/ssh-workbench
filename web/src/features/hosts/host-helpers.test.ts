@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { parseQuickTarget } from './host-helpers'
+import { isLocalHost, LOCAL_HOST_ID, localHostProfile, parseQuickTarget } from './host-helpers'
+
+describe('localHostProfile', () => {
+  it('builds a stable local shell profile identified by LOCAL_HOST_ID', () => {
+    const profile = localHostProfile()
+    expect(profile.id).toBe(LOCAL_HOST_ID)
+    expect(isLocalHost(profile)).toBe(true)
+    expect(isLocalHost({ ...profile, id: 'other' })).toBe(false)
+  })
+})
 
 describe('parseQuickTarget', () => {
   it('parses host, user@host, user@host:port, and ipv6 targets', () => {

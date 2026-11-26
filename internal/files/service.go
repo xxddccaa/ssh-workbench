@@ -85,6 +85,10 @@ func (service *Service) open(ctx context.Context, owner, terminalID string) (Rem
 		<-service.slots
 		return nil, nil, err
 	}
+	if target.Local {
+		<-service.slots
+		return nil, nil, fault.New(400, "local_terminal_no_sftp", "本地终端不支持 SFTP 文件面板。")
+	}
 	dialContext, cancel := context.WithTimeout(ctx, 20*time.Second)
 	remote, err := service.connector.OpenFiles(dialContext, target)
 	cancel()

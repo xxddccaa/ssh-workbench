@@ -57,7 +57,7 @@ func TestRemoteTLSRequiresLoginAndDisablesLocalCapabilities(test *testing.T) {
 			test.Errorf("cookie lacks %s: %s", required, cookie)
 		}
 	}
-	if !bytes.Contains(body, []byte(`"localFiles":false`)) || !bytes.Contains(body, []byte(`"agent":false`)) {
+	if !bytes.Contains(body, []byte(`"localFiles":false`)) || !bytes.Contains(body, []byte(`"agent":false`)) || !bytes.Contains(body, []byte(`"localTerminal":false`)) {
 		test.Fatalf("remote capabilities not restricted: %s", body)
 	}
 	fixture.csrf = string(bytes.Split(bytes.Split(body, []byte(`"csrfToken":"`))[1], []byte(`"`))[0])
@@ -65,4 +65,5 @@ func TestRemoteTLSRequiresLoginAndDisablesLocalCapabilities(test *testing.T) {
 	fixture.call("POST", "/api/v1/hosts", hostRequest("key", "127.0.0.1:22", "u", "key", map[string]any{"identityFile": "~/.ssh/id_ed25519"}), 403)
 	fixture.call("POST", "/api/v1/imports/ssh-config/preview", map[string]string{"source": "local"}, 403)
 	fixture.call("GET", "/api/v1/local-documents/anything", nil, 403)
+	fixture.call("POST", "/api/v1/attempts", map[string]any{"purpose": "terminal", "hostId": "local:shell", "rows": 24, "cols": 80, "credentials": map[string]string{}}, 403)
 }

@@ -15,6 +15,7 @@ const states = {
 export function TerminalPane({
   controller,
   title,
+  protocol = 'SSH',
   production,
   focused,
   searchRequest,
@@ -24,11 +25,12 @@ export function TerminalPane({
 }: {
   controller: TerminalController
   title: string
+  protocol?: string
   production: boolean
   focused: boolean
   searchRequest: number
   onFocus: () => void
-  onDrop: (items: UploadItem[]) => void
+  onDrop?: (items: UploadItem[]) => void
   onReconnect: () => void
 }) {
   const container = useRef<HTMLDivElement>(null)
@@ -62,16 +64,19 @@ export function TerminalPane({
       aria-label={`终端 ${title}`}
       onMouseDown={onFocus}
       onDragOver={(event) => {
-        if (!event.dataTransfer.types.includes('Files')) return
+        if (!onDrop || !event.dataTransfer.types.includes('Files')) return
         event.preventDefault()
         setDragging(true)
       }}
       onDragLeave={(event) => {
+        if (!onDrop) return
         if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragging(false)
       }}
       onDrop={(event) => {
+        if (!event.dataTransfer.types.includes('Files')) return
         event.preventDefault()
         setDragging(false)
+        if (!onDrop) return
         fromDataTransfer(event.dataTransfer)
           .then(onDrop)
           .catch((problem: unknown) =>
@@ -84,7 +89,7 @@ export function TerminalPane({
         <strong className="terminal-title">{title}</strong>
         {production && <span className="production-badge">生产</span>}
         <span>{label}</span>
-        <span className="terminal-protocol">SSH / UTF-8</span>
+        <span className="terminal-protocol">{protocol} / UTF-8</span>
         {ended && (
           <button
             className="icon-button"

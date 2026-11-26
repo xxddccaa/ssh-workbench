@@ -622,8 +622,9 @@ type AuthState struct {
 	AuthRequired  *bool `json:"authRequired,omitempty"`
 	Authenticated bool  `json:"authenticated"`
 	Capabilities  *struct {
-		Agent      bool `json:"agent"`
-		LocalFiles bool `json:"localFiles"`
+		Agent         bool `json:"agent"`
+		LocalFiles    bool `json:"localFiles"`
+		LocalTerminal bool `json:"localTerminal"`
 	} `json:"capabilities,omitempty"`
 	CsrfToken *string    `json:"csrfToken,omitempty"`
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`

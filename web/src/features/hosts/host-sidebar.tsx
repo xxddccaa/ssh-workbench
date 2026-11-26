@@ -15,7 +15,7 @@ import {
 import { api, messageOf } from '../../shared/api/client'
 import type { HostProfile, SSHConfigHost } from '../../shared/api/types'
 import { useNotice } from '../../shared/ui/notices'
-import { isSSHConfigHost, sshConfigToProfile } from './host-helpers'
+import { isSSHConfigHost, LOCAL_HOST_ID, sshConfigToProfile } from './host-helpers'
 
 type SidebarFilter = 'all' | 'ssh-config' | 'favorites'
 
@@ -32,6 +32,8 @@ export function HostSidebar({
   onCreate,
   onImport,
   onRefreshSSHConfig,
+  localTerminal,
+  onLocalTerminal,
   searchShortcut,
 }: {
   hosts: HostProfile[]
@@ -46,6 +48,8 @@ export function HostSidebar({
   onCreate: () => void
   onImport: () => void
   onRefreshSSHConfig: () => void
+  localTerminal?: boolean
+  onLocalTerminal?: () => void
   searchShortcut: string
 }) {
   const [filter, setFilter] = useState<SidebarFilter>('all')
@@ -188,6 +192,29 @@ export function HostSidebar({
           </button>
         ))}
       </div>
+
+      {localTerminal && onLocalTerminal && (
+        <div className="sidebar-local">
+          <button
+            type="button"
+            className={`host-row host-teal local-terminal-row ${activeHost === LOCAL_HOST_ID ? 'selected' : ''}`}
+            onClick={onLocalTerminal}
+            title="打开新的本地终端 (Shell)"
+          >
+            <span className="host-row-main">
+              <span className={`row-dot ${connectedHosts.has(LOCAL_HOST_ID) ? 'online' : ''}`} />
+              <span className="row-text">
+                <span className="row-name">
+                  <strong>本地终端</strong>
+                  <span className="config-badge">LOCAL</span>
+                </span>
+                <small>本机 Shell · 新建标签页</small>
+              </span>
+            </span>
+            <Terminal size={13} className="local-terminal-icon" />
+          </button>
+        </div>
+      )}
 
       <div className="host-groups">
         {groups.map(([group, entries]) => {

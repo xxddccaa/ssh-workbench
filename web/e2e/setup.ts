@@ -129,7 +129,7 @@ export default async function setupE2E() {
     process.env.SSHWB_BINARY = join(root, `bin/sshw${suffix}`)
     const started = await launch(
       join(root, `bin/sshw${suffix}`),
-      ['--listen', '127.0.0.1:0', '--data-dir', dataDirectory, '--no-browser'],
+      ['--foreground', '--listen', '127.0.0.1:0', '--data-dir', dataDirectory, '--no-browser'],
       /Open: (\S+)/,
       children,
       { ...process.env, HOME: home, USERPROFILE: home, SSH_AUTH_SOCK: '' },

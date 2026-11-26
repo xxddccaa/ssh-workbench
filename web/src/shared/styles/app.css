@@ -503,6 +503,22 @@ svg {
   border-bottom: 1px solid var(--border-soft);
   margin-bottom: 6px;
 }
+.sidebar-local {
+  padding: 0 6px 6px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 6px;
+}
+.local-terminal-row {
+  width: 100%;
+  padding-right: 8px;
+}
+.local-terminal-icon {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.local-terminal-row:hover .local-terminal-icon {
+  color: var(--accent);
+}
 .filter-pill {
   font-size: 10px;
   color: var(--muted);

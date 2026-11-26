@@ -7,6 +7,8 @@ export function WelcomePage({
   hosts,
   sshConfigHosts,
   version,
+  localTerminal,
+  onLocalTerminal,
   onCreate,
   onImport,
   onTunnels,
@@ -16,6 +18,8 @@ export function WelcomePage({
   hosts: HostProfile[]
   sshConfigHosts: SSHConfigHost[]
   version: string
+  localTerminal?: boolean
+  onLocalTerminal?: () => void
   onCreate: () => void
   onImport: () => void
   onTunnels: () => void
@@ -82,6 +86,12 @@ export function WelcomePage({
             <p>输入地址回车直连，或点击下方已保存主机与本机 ~/.ssh/config 服务器</p>
           </div>
           <div className="launchpad-actions">
+            {localTerminal && onLocalTerminal && (
+              <button className="button primary small" onClick={onLocalTerminal}>
+                <Terminal size={14} />
+                本地终端
+              </button>
+            )}
             <button className="button secondary small" onClick={onCreate}>
               <Plus size={14} />
               新建主机

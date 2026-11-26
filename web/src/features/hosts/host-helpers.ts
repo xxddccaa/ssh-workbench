@@ -1,11 +1,35 @@
 import type { HostProfile, QuickConnectTarget, SSHConfigHost } from '../../shared/api/types'
 
+export const LOCAL_HOST_ID = 'local:shell'
+
+export function isLocalHost(host: HostProfile): boolean {
+  return host.id === LOCAL_HOST_ID
+}
+
 export function isSSHConfigHost(host: HostProfile): boolean {
   return host.id.startsWith('sshcfg:')
 }
 
 export function isQuickHost(host: HostProfile): boolean {
   return host.id.startsWith('quick:')
+}
+
+export function localHostProfile(): HostProfile {
+  const now = new Date(0).toISOString()
+  return {
+    id: LOCAL_HOST_ID,
+    name: '本地终端',
+    hostname: 'localhost',
+    port: 22,
+    username: 'local',
+    authMode: 'auto',
+    group: '本机',
+    color: 'teal',
+    favorite: false,
+    production: false,
+    createdAt: now,
+    updatedAt: now,
+  }
 }
 
 export function sshConfigToProfile(entry: SSHConfigHost): HostProfile {

@@ -61,16 +61,17 @@ type SSHConfigResolver interface {
 }
 
 type Service struct {
-	hosts     *hosts.Service
-	vault     Vault
-	attempts  *connections.Attempts
-	terminals *terminals.Service
-	tunnels   *tunnels.Service
-	sshConfig SSHConfigResolver
+	hosts         *hosts.Service
+	vault         Vault
+	attempts      *connections.Attempts
+	terminals     *terminals.Service
+	tunnels       *tunnels.Service
+	sshConfig     SSHConfigResolver
+	localTerminal bool
 }
 
-func New(hostService *hosts.Service, vault Vault, attempts *connections.Attempts, terminalService *terminals.Service, tunnelService *tunnels.Service, sshConfig SSHConfigResolver) *Service {
-	return &Service{hosts: hostService, vault: vault, attempts: attempts, terminals: terminalService, tunnels: tunnelService, sshConfig: sshConfig}
+func New(hostService *hosts.Service, vault Vault, attempts *connections.Attempts, terminalService *terminals.Service, tunnelService *tunnels.Service, sshConfig SSHConfigResolver, localTerminal bool) *Service {
+	return &Service{hosts: hostService, vault: vault, attempts: attempts, terminals: terminalService, tunnels: tunnelService, sshConfig: sshConfig, localTerminal: localTerminal}
 }
 
 func currentUsername() string {
@@ -122,6 +123,26 @@ func (service *Service) target(ctx context.Context, owner string, request Reques
 			return connections.Target{}, hosts.Profile{}, false, err
 		}
 		return connections.Target{Owner: owner, Host: profile, Credentials: request.Credentials}, profile, false, nil
+	}
+	if request.HostID == connections.LocalHostID {
+		if !service.localTerminal {
+			return connections.Target{}, hosts.Profile{}, false, fault.New(403, "local_terminal_disabled", "当前模式或系统不支持本地终端。")
+		}
+		username := currentUsername()
+		if username == "" {
+			username = "local"
+		}
+		profile := hosts.Profile{
+			ID:       connections.LocalHostID,
+			Name:     "本地终端",
+			Hostname: "localhost",
+			Port:     22,
+			Username: username,
+			AuthMode: hosts.AuthAuto,
+			Group:    "本机",
+			Color:    "teal",
+		}
+		return connections.Target{Owner: owner, Host: profile, Local: true}, profile, false, nil
 	}
 	if strings.HasPrefix(request.HostID, "sshcfg:") {
 		if service.sshConfig == nil {

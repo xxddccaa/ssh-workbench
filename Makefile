@@ -38,7 +38,7 @@ dev-web:
 	$(NPM) --prefix web run dev
 
 dev-go:
-	go run ./cmd/sshw --dev-origin http://127.0.0.1:5173
+	go run ./cmd/sshw --foreground --dev-origin http://127.0.0.1:5173
 
 notices:
 	node scripts/notices.mjs

@@ -1682,11 +1682,15 @@
               },
               "agent": {
                 "type": "boolean"
+              },
+              "localTerminal": {
+                "type": "boolean"
               }
             },
             "required": [
               "localFiles",
-              "agent"
+              "agent",
+              "localTerminal"
             ]
           }
         },

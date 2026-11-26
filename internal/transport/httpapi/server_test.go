@@ -24,6 +24,7 @@ import (
 
 	"github.com/coder/websocket"
 
+	"sshworkbench/internal/adapters/localpty"
 	"sshworkbench/internal/adapters/sqlite"
 	"sshworkbench/internal/auth"
 	"sshworkbench/internal/bootstrap"
@@ -94,7 +95,7 @@ func newHarnessWithMode(test *testing.T, requireAuth bool, strictHostKey bool) *
 	test.Cleanup(closeServices)
 	server := httptest.NewUnstartedServer(nil)
 	origin := "http://" + server.Listener.Addr().String()
-	handler, err := httpapi.New(httpapi.Config{Origin: origin, RequireAuth: requireAuth, Version: "test", LocalFiles: true, Agent: true}, services, fstest.MapFS{"index.html": {Data: []byte("<!doctype html><title>Test</title>")}})
+	handler, err := httpapi.New(httpapi.Config{Origin: origin, RequireAuth: requireAuth, Version: "test", LocalFiles: true, Agent: true, LocalTerminal: localpty.Supported()}, services, fstest.MapFS{"index.html": {Data: []byte("<!doctype html><title>Test</title>")}})
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -375,6 +376,21 @@ func TestDirectOpenAndSSHConfigAutoConnect(test *testing.T) {
 	// Quick connect without saving a host profile also works directly.
 	quickTerm := fixture.open(map[string]any{"purpose": "terminal", "quickConnect": map[string]any{"hostname": "127.0.0.1", "port": port, "username": sshserver.Username, "authMode": "auto"}, "rows": 24, "cols": 80, "credentials": map[string]string{"password": sshserver.Password}})
 	fixture.call("DELETE", "/api/v1/terminals/"+quickTerm.ID, nil, 204)
+
+	if localpty.Supported() {
+		localTerm := fixture.open(map[string]any{"purpose": "terminal", "hostId": connections.LocalHostID, "rows": 24, "cols": 80, "credentials": map[string]string{}})
+		fixture.call("GET", "/api/v1/terminals/"+localTerm.ID+"/files?path=.", nil, 400)
+		wsCtx, wsCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer wsCancel()
+		var cursor uint64
+		ws := fixture.connectSocket(wsCtx, localTerm.ID, cursor)
+		if err := ws.Write(wsCtx, websocket.MessageBinary, append([]byte{2}, []byte("echo local-ws-ok\r")...)); err != nil {
+			test.Fatal(err)
+		}
+		readUntil(test, wsCtx, ws, &cursor, "local-ws-ok")
+		ws.CloseNow()
+		fixture.call("DELETE", "/api/v1/terminals/"+localTerm.ID, nil, 204)
+	}
 }
 
 func readUntil(test *testing.T, ctx context.Context, socket *websocket.Conn, cursor *uint64, needle string) {

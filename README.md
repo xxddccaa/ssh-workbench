@@ -27,8 +27,13 @@ sshw upgrade
 ## 快速使用
 
 ```sh
-# 本机启动（默认监听 127.0.0.1:7331，自动打开浏览器，直接进入工作台）
+# 本机启动（默认后台运行并自动打开浏览器，如 7331 被非 sshw 占用则自动顺延端口）
 sshw
+
+# 查看后台状态 / 停止后台服务 / 前台运行
+sshw status
+sshw stop
+sshw --foreground
 
 # 局域网 / 服务器部署（监听所有网卡，HTTP 直接访问，不弹出登录拦截）
 sshw --listen 0.0.0.0:7331
@@ -43,6 +48,7 @@ sshw edit ./app.conf
 ### 核心特性
 
 - **开箱直连**：默认直接打开工作区，支持 `localhost`、`127.0.0.1`、局域网 IP 与反代 HTTP 直接访问。如需对外暴露并加密码/HTTPS，可按需启用 `--auth` 或 `--remote --origin https://... --tls-cert ... --tls-key ...`。
+- **内置本地终端（macOS / Linux）**：支持在工作区直接新建并分屏使用本机默认 Shell（PTY）。
 - **完整兼容 Mac / Linux `~/.ssh/config`**：
   - 侧边栏与快速启动台自动列出 `~/.ssh/config` 主机（支持 `Include` 与外部软链接，如 OrbStack、Colima、dotfiles），点击即连。
   - 支持 `ProxyCommand`（如 `cloudflared`、`aws ssm`、`ssh -W`）与 `ProxyJump` 单级跳板。

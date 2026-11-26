@@ -32,13 +32,14 @@ import (
 )
 
 type Config struct {
-	Origin      string
-	DevOrigin   string
-	Remote      bool
-	RequireAuth bool
-	Version     string
-	LocalFiles  bool
-	Agent       bool
+	Origin        string
+	DevOrigin     string
+	Remote        bool
+	RequireAuth   bool
+	Version       string
+	LocalFiles    bool
+	Agent         bool
+	LocalTerminal bool
 }
 
 // Services are the business modules the HTTP layer delegates to.
@@ -228,6 +229,7 @@ func currentSession(request *http.Request) auth.Session {
 }
 
 func (server *Server) authState(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("X-SSHW-Service", "ssh-workbench")
 	session, authenticated := server.session(request)
 	state := map[string]any{
 		"authenticated": authenticated,
@@ -284,7 +286,11 @@ func (server *Server) completeLogin(response http.ResponseWriter, token string, 
 }
 
 func (server *Server) capabilities() map[string]bool {
-	return map[string]bool{"localFiles": server.config.LocalFiles, "agent": server.config.Agent}
+	return map[string]bool{
+		"localFiles":    server.config.LocalFiles,
+		"agent":         server.config.Agent,
+		"localTerminal": server.config.LocalTerminal,
+	}
 }
 
 func (server *Server) logout(response http.ResponseWriter, request *http.Request) {
