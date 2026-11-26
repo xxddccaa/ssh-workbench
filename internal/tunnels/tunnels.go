@@ -6,14 +6,12 @@ package tunnels
 
 import (
 	"context"
-	"errors"
 	"io"
 	"net"
 	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"time"
 	"unicode/utf8"
 
@@ -239,9 +237,9 @@ func (service *Service) Listen(spec Spec) (net.Listener, error) {
 	listener, err := net.Listen("tcp", net.JoinHostPort(spec.ListenHost, strconv.Itoa(spec.ListenPort)))
 	if err != nil {
 		switch {
-		case errors.Is(err, syscall.EADDRINUSE):
+		case isAddrInUse(err):
 			return nil, fault.New(409, "port_in_use", "本机端口 "+strconv.Itoa(spec.ListenPort)+" 已被占用，请换一个端口或停止占用它的程序。")
-		case errors.Is(err, syscall.EACCES) || errors.Is(err, syscall.EPERM):
+		case isListenPermissionDenied(err):
 			return nil, fault.New(403, "port_permission_denied", "当前用户无权监听此端口（例如 1024 以下端口）。")
 		default:
 			return nil, fault.New(502, "listen_failed", "无法监听本机端口。")

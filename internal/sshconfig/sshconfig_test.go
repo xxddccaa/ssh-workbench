@@ -719,6 +719,7 @@ func TestInvalidAliasNeedsHostName(t *testing.T) {
 }
 
 func TestAuthenticationSettings(t *testing.T) {
+	absKey := filepath.FromSlash(filepath.VolumeName(t.TempDir()) + "/etc/ssh/ssh_host_key")
 	result, home := parseConfig(t, map[string]string{".ssh/config": `
 Host only-explicit
     IdentitiesOnly yes
@@ -727,7 +728,7 @@ Host only-without-files
     IdentitiesOnly yes
 Host no-agent
     IdentityAgent none
-    IdentityFile /etc/ssh/ssh_host_key
+    IdentityFile ` + filepath.ToSlash(absKey) + `
     IdentityFile ~/relative-to-home
     IdentityFile relative
     IdentityFile %r/key
@@ -746,7 +747,7 @@ Host default-agent
 	}{
 		{alias: "only-explicit", identityFiles: []string{filepath.Join(home, ".ssh", "id_explicit")}, identitiesOnly: true},
 		{alias: "only-without-files", identitiesOnly: true, useAgent: true},
-		{alias: "no-agent", identityFiles: []string{"/etc/ssh/ssh_host_key", filepath.Join(home, "relative-to-home")}, warnings: 2},
+		{alias: "no-agent", identityFiles: []string{absKey, filepath.Join(home, "relative-to-home")}, warnings: 2},
 		{alias: "custom-agent", useAgent: true, warnings: 1},
 		{alias: "default-agent", useAgent: true},
 	}
