@@ -1392,7 +1392,7 @@
       ],
       "get": {
         "operationId": "readLocalDocument",
-        "description": "Local mode only. Identifiers are issued by `sshworkbench edit` over the OS-user-only control channel.",
+        "description": "Local mode only. Identifiers are issued by `sshw edit` over the OS-user-only control channel.",
         "responses": {
           "default": {
             "$ref": "#/components/responses/Failure"

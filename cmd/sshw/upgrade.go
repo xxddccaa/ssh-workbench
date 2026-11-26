@@ -47,7 +47,7 @@ func upgradeCommand(arguments []string) error {
 	if runtime.GOOS == "windows" {
 		ext = "zip"
 	}
-	archiveName := fmt.Sprintf("sshworkbench_%s_%s_%s.%s", ver, runtime.GOOS, runtime.GOARCH, ext)
+	archiveName := fmt.Sprintf("sshw_%s_%s_%s.%s", ver, runtime.GOOS, runtime.GOARCH, ext)
 	baseURL := fmt.Sprintf("https://github.com/%s/releases/download/%s", *repo, tag)
 	fmt.Printf("正在下载 %s (%s)...\n", archiveName, tag)
 	archiveBytes, err := downloadBytes(client, baseURL+"/"+archiveName, 128<<20)
@@ -62,9 +62,9 @@ func upgradeCommand(arguments []string) error {
 			}
 		}
 	}
-	binaryName := "sshworkbench"
+	binaryName := "sshw"
 	if runtime.GOOS == "windows" {
-		binaryName = "sshworkbench.exe"
+		binaryName = "sshw.exe"
 	}
 	binaryData, err := extractBinary(archiveBytes, ext, binaryName)
 	if err != nil {
@@ -91,7 +91,7 @@ func latestReleaseTag(client *http.Client, repo string) (string, error) {
 		return "", err
 	}
 	request.Header.Set("Accept", "application/vnd.github+json")
-	request.Header.Set("User-Agent", "sshworkbench/"+version)
+	request.Header.Set("User-Agent", "sshw/"+version)
 	response, err := client.Do(request)
 	if err != nil {
 		return "", err
@@ -117,7 +117,7 @@ func downloadBytes(client *http.Client, url string, limit int64) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Set("User-Agent", "sshworkbench/"+version)
+	request.Header.Set("User-Agent", "sshw/"+version)
 	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -186,7 +186,7 @@ func extractBinary(archiveBytes []byte, ext, binaryName string) ([]byte, error) 
 
 func replaceBinary(target string, data []byte) error {
 	dir := filepath.Dir(target)
-	tmp, err := os.CreateTemp(dir, ".sshworkbench-upgrade-*")
+	tmp, err := os.CreateTemp(dir, ".sshw-upgrade-*")
 	if err != nil {
 		return err
 	}

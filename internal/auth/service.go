@@ -126,7 +126,7 @@ func (service *Service) Exchange(token string) (string, Session, error) {
 
 // Consume spends a bootstrap token without creating a session. It is used
 // when the browser already holds a valid session, so a second window opened
-// by `sshworkbench open`/`edit` joins it instead of replacing the cookie that
+// by `sshw open`/`edit` joins it instead of replacing the cookie that
 // existing tabs (and their terminals) depend on.
 func (service *Service) Consume(token string) error {
 	service.mu.Lock()
@@ -138,7 +138,7 @@ func (service *Service) consumeLocked(token string) error {
 	digest := sha256.Sum256([]byte(token))
 	expires, exists := service.bootstraps[digest]
 	if service.remote || token == "" || !exists || time.Now().After(expires) {
-		return fault.New(401, "bootstrap_invalid", "本机授权链接已过期或已使用。请在终端运行 sshworkbench open 获取新链接。")
+		return fault.New(401, "bootstrap_invalid", "本机授权链接已过期或已使用。请在终端运行 sshw open 获取新链接。")
 	}
 	delete(service.bootstraps, digest)
 	return nil

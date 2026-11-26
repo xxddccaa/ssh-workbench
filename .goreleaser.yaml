@@ -1,16 +1,16 @@
 # Release builds with GoReleaser (https://goreleaser.com). Requires a git
 # repository with a tag; `make dist` produces equivalent archives without git.
 version: 2
-project_name: sshworkbench
+project_name: sshw
 before:
   hooks:
     - npm ci --prefix web
     - npm run build --prefix web
     - node scripts/notices.mjs
 builds:
-  - id: sshworkbench
-    main: ./cmd/sshworkbench
-    binary: sshworkbench
+  - id: sshw
+    main: ./cmd/sshw
+    binary: sshw
     env:
       - CGO_ENABLED=0
     flags:

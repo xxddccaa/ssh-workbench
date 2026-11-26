@@ -123,7 +123,7 @@ export function Application() {
     const documentID = new URLSearchParams(location.search).get('document')
     if (!documentID)
       return (
-        <div className="startup">本机文件链接不完整，请在终端运行 sshworkbench edit 文件路径。</div>
+        <div className="startup">本机文件链接不完整，请在终端运行 sshw edit 文件路径。</div>
       )
     return <EditorPanel source={{ kind: 'local', documentID }} theme={theme} standalone />
   }
@@ -156,7 +156,7 @@ function AuthGate({
     try {
       const state = remote ? await api.login(password) : await api.auth()
       if (!state.authenticated) {
-        setError('请在终端运行 sshworkbench open 获取新的一次性授权链接。')
+        setError('请在终端运行 sshw open 获取新的一次性授权链接。')
         return
       }
       setPassword('')
@@ -198,7 +198,7 @@ function AuthGate({
               <LockKeyhole size={21} />
               <span>
                 使用启动时打印的一次性授权链接；链接过期或已使用时，在终端运行{' '}
-                <code>sshworkbench open</code> 获取新链接，无需重启服务。
+                <code>sshw open</code> 获取新链接，无需重启服务。
               </span>
             </div>
           )}

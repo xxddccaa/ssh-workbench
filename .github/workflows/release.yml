@@ -54,7 +54,7 @@ jobs:
           elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF_NAME}"
           else
-            TAG="v$(sed -n 's/^var version = "\(.*\)"/\1/p' cmd/sshworkbench/main.go)"
+            TAG="v$(sed -n 's/^var version = "\(.*\)"/\1/p' cmd/sshw/main.go)"
           fi
           VER="${TAG#v}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"

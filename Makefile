@@ -12,10 +12,10 @@ web:
 	$(NPM) --prefix web run build
 
 build: web
-	go build -trimpath -ldflags="-s -w" -o bin/sshworkbench ./cmd/sshworkbench
+	go build -trimpath -ldflags="-s -w" -o bin/sshw ./cmd/sshw
 
 run: build
-	./bin/sshworkbench
+	./bin/sshw
 
 test: check-contracts
 	go test -race ./...
@@ -38,7 +38,7 @@ dev-web:
 	$(NPM) --prefix web run dev
 
 dev-go:
-	go run ./cmd/sshworkbench --dev-origin http://127.0.0.1:5173
+	go run ./cmd/sshw --dev-origin http://127.0.0.1:5173
 
 notices:
 	node scripts/notices.mjs

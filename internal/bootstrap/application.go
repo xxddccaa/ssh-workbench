@@ -96,7 +96,7 @@ func Run(ctx context.Context, config Config, onReady func(Ready)) error {
 			return ErrAlreadyRunning
 		}
 		if err != nil {
-			slog.Warn("local control channel unavailable; `sshworkbench open` and `edit` will not work", "reason", err.Error())
+			slog.Warn("local control channel unavailable; `sshw open` and `edit` will not work", "reason", err.Error())
 		} else {
 			defer controlListener.Close()
 		}
@@ -106,7 +106,7 @@ func Run(ctx context.Context, config Config, onReady func(Ready)) error {
 		return err
 	}
 	if config.Remote && passwordHash == "" {
-		return errors.New("set the owner password locally first: sshworkbench password --data-dir <directory>")
+		return errors.New("set the owner password locally first: sshw password --data-dir <directory>")
 	}
 	var tlsConfiguration *tls.Config
 	if config.Remote {

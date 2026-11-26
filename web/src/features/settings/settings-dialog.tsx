@@ -304,7 +304,7 @@ function SecuritySection({
   onLogout: () => void
 }) {
   const authRequired = auth.authRequired !== false
-  const relock = '锁定后可在终端运行 sshworkbench open 获取新的授权链接，无需重启服务。'
+  const relock = '锁定后可在终端运行 sshw open 获取新的授权链接，无需重启服务。'
   const capabilities = auth.capabilities
   return (
     <>

@@ -9,7 +9,7 @@ usage() {
   cat <<'EOF'
 Usage: install.sh [--version vX.Y.Z] [--dir /path/to/bin]
 
-Installs or upgrades sshworkbench from GitHub Releases.
+Installs or upgrades sshw (SSH Workbench) from GitHub Releases.
 Environment variables:
   SSHWB_REPO     GitHub repo (default: xxddccaa/ssh-workbench)
   SSHWB_VERSION  Specific release tag (default: latest)
@@ -103,7 +103,7 @@ else
 fi
 
 VER="${TAG#v}"
-ARCHIVE="sshworkbench_${VER}_${OS}_${ARCH}.tar.gz"
+ARCHIVE="sshw_${VER}_${OS}_${ARCH}.tar.gz"
 BASE_URL="https://github.com/$REPO/releases/download/$TAG"
 
 if [ -z "$INSTALL_DIR" ]; then
@@ -140,22 +140,25 @@ if fetch_file "$BASE_URL/SHA256SUMS" "$TMPDIR/SHA256SUMS" 2>/dev/null; then
 fi
 
 tar -xzf "$TMPDIR/$ARCHIVE" -C "$TMPDIR"
-BIN_SRC="$TMPDIR/sshworkbench_${VER}_${OS}_${ARCH}/sshworkbench"
+BIN_SRC="$TMPDIR/sshw_${VER}_${OS}_${ARCH}/sshw"
 if [ ! -f "$BIN_SRC" ]; then
-  BIN_SRC="$(find "$TMPDIR" -maxdepth 3 -type f -name sshworkbench | head -n 1)"
+  BIN_SRC="$(find "$TMPDIR" -maxdepth 3 -type f -name sshw | head -n 1)"
 fi
 if [ ! -f "$BIN_SRC" ]; then
-  echo "Error: sshworkbench binary not found in archive." >&2
+  echo "Error: sshw binary not found in archive." >&2
   exit 1
 fi
 
 mkdir -p "$INSTALL_DIR"
 chmod +x "$BIN_SRC"
-mv "$BIN_SRC" "$INSTALL_DIR/sshworkbench"
+mv "$BIN_SRC" "$INSTALL_DIR/sshw"
+if [ -e "$INSTALL_DIR/sshworkbench" ] || [ -L "$INSTALL_DIR/sshworkbench" ]; then
+  ln -sf sshw "$INSTALL_DIR/sshworkbench"
+fi
 
-echo "Installed sshworkbench $VER to $INSTALL_DIR/sshworkbench"
+echo "Installed sshw $VER to $INSTALL_DIR/sshw"
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
   *) echo "Add $INSTALL_DIR to PATH: export PATH=\"$INSTALL_DIR:\$PATH\"" ;;
 esac
-echo "Run 'sshworkbench' to start (or 'sshworkbench --listen 0.0.0.0:7331' for LAN/server deployment)."
+echo "Run 'sshw' to start (or 'sshw --listen 0.0.0.0:7331' for LAN/server deployment)."

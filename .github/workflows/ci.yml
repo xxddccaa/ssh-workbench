@@ -52,6 +52,6 @@ jobs:
       - run: npm run build --prefix web
       - run: go test ./...
       - run: go vet ./...
-      - run: go build -trimpath ./cmd/sshworkbench
+      - run: go build -trimpath ./cmd/sshw
         env:
           CGO_ENABLED: '0'

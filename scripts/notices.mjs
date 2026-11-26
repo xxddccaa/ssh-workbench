@@ -18,7 +18,7 @@ function licenseTexts(directory) {
 function goModules() {
   const output = execFileSync(
     'go',
-    ['list', '-deps', '-f', '{{with .Module}}{{.Path}} {{.Version}} {{.Dir}}{{end}}', './cmd/sshworkbench'],
+    ['list', '-deps', '-f', '{{with .Module}}{{.Path}} {{.Version}} {{.Dir}}{{end}}', './cmd/sshw'],
     { cwd: root, encoding: 'utf8', env: { ...process.env, GOFLAGS: '-mod=mod' } },
   )
   const modules = new Map()

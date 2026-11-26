@@ -24,7 +24,7 @@ import (
 	"sshworkbench/internal/logging"
 )
 
-var version = "0.2.0"
+var version = "0.3.0"
 
 func main() {
 	logging.Install(os.Stderr)
@@ -56,7 +56,7 @@ func run(arguments []string) error {
 	if len(arguments) > 0 && arguments[0] == "serve" {
 		arguments = arguments[1:]
 	}
-	flags := flag.NewFlagSet("sshworkbench", flag.ContinueOnError)
+	flags := flag.NewFlagSet("sshw", flag.ContinueOnError)
 	var config bootstrap.Config
 	var noBrowser bool
 	flags.StringVar(&config.Listen, "listen", "127.0.0.1:7331", "HTTP listen address")
@@ -117,7 +117,7 @@ func controlCommand(command string, arguments []string, defaultDirectory string)
 		}
 		filename = absolute
 	default:
-		return fmt.Errorf("usage: sshworkbench open | sshworkbench edit FILE")
+		return fmt.Errorf("usage: sshw open | sshw edit FILE")
 	}
 	return requestControl(command, filename, *directory, *noBrowser)
 }
@@ -127,7 +127,7 @@ func requestControl(command, filename, directory string, noBrowser bool) error {
 	defer cancel()
 	connection, err := platform.DialControl(ctx, directory)
 	if err != nil {
-		return fmt.Errorf("没有找到正在运行的本机服务，请先运行 sshworkbench")
+		return fmt.Errorf("没有找到正在运行的本机服务，请先运行 sshw")
 	}
 	response, err := control.Call(connection, control.Request{Command: command, Path: filename})
 	if err != nil {

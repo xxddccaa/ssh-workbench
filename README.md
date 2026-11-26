@@ -1,6 +1,6 @@
-# SSH Workbench
+# SSH Workbench (`sshw`)
 
-开箱即用的 Web SSH / SFTP 工作台。Go 单进程内嵌 React 19 / TypeScript / xterm.js / Monaco 界面，零运行时依赖，支持直接读取本机 `~/.ssh/config` 一键直连。
+开箱即用的 Web SSH / SFTP 工作台。Go 单进程内嵌 React 19 / TypeScript / xterm.js / Monaco 界面，零运行时依赖，支持直接读取本机 `~/.ssh/config` 一键直连，命令行使用简短的 `sshw` 启动。
 
 ## 一键安装与升级
 
@@ -13,31 +13,31 @@ curl -fsSL https://raw.githubusercontent.com/xxddccaa/ssh-workbench/main/install
 已安装后，可随时直接升级到 GitHub 最新 Release：
 
 ```sh
-sshworkbench upgrade
+sshw upgrade
 ```
 
 ### Windows
 
-从 [GitHub Releases](https://github.com/xxddccaa/ssh-workbench/releases/latest) 下载 `sshworkbench_*_windows_amd64.zip`，解压后直接运行 `sshworkbench.exe`，或使用内置升级命令：
+从 [GitHub Releases](https://github.com/xxddccaa/ssh-workbench/releases/latest) 下载 `sshw_*_windows_amd64.zip`，解压后直接运行 `sshw.exe`，或使用内置升级命令：
 
 ```powershell
-.\sshworkbench.exe upgrade
+.\sshw.exe upgrade
 ```
 
 ## 快速使用
 
 ```sh
 # 本机启动（默认监听 127.0.0.1:7331，自动打开浏览器，直接进入工作台）
-sshworkbench
+sshw
 
 # 局域网 / 服务器部署（监听所有网卡，HTTP 直接访问，不弹出登录拦截）
-sshworkbench --listen 0.0.0.0:7331
+sshw --listen 0.0.0.0:7331
 
 # 如需后台无浏览器启动
-sshworkbench --listen 0.0.0.0:7331 --no-browser
+sshw --listen 0.0.0.0:7331 --no-browser
 
 # 在本地终端中打开某个文本文件到浏览器 Monaco 编辑器
-sshworkbench edit ./app.conf
+sshw edit ./app.conf
 ```
 
 ### 核心特性
@@ -63,7 +63,7 @@ make install   # 安装前后端依赖
 make run       # 构建并启动
 make test      # 契约漂移检查、Go -race / vet、TypeScript 与 Vitest 单测
 make e2e       # Playwright 浏览器端到端验收
-make build     # 输出单可执行文件 bin/sshworkbench
+make build     # 输出单可执行文件 bin/sshw
 make dist      # 交叉编译 macOS/Linux/Windows 五平台归档与 SHA256SUMS
 ```
 
@@ -72,6 +72,6 @@ make dist      # 交叉编译 macOS/Linux/Windows 五平台归档与 SHA256SUMS
 推送 `v*` 标签即可触发 [`.github/workflows/release.yml`](.github/workflows/release.yml)，自动运行测试并交叉编译 `darwin/arm64`、`darwin/amd64`、`linux/amd64`、`linux/arm64`、`windows/amd64` 产物及 `SHA256SUMS` 发布到 GitHub Releases：
 
 ```sh
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.3.0
+git push origin v0.3.0
 ```

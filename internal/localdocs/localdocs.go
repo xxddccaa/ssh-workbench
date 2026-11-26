@@ -71,7 +71,7 @@ func (service *Service) lookup(identifier string) (Registration, error) {
 	registration, exists := service.documents[identifier]
 	if !exists || time.Now().After(registration.ExpiresAt) {
 		delete(service.documents, identifier)
-		return Registration{}, fault.New(404, "local_document_not_found", "本机文件授权不存在或已过期，请重新运行 sshworkbench edit。")
+		return Registration{}, fault.New(404, "local_document_not_found", "本机文件授权不存在或已过期，请重新运行 sshw edit。")
 	}
 	return registration, nil
 }

@@ -2,6 +2,8 @@ web/node_modules/
 web/dist/*
 !web/dist/.keep
 bin/
+/sshw
+/sshw.exe
 /sshworkbench
 /sshworkbench.exe
 .local/

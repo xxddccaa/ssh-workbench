@@ -82,7 +82,7 @@ export default async function setupE2E() {
   try {
     await mkdir(join(root, 'bin'), { recursive: true })
     await mkdir(join(root, '.local/screenshots'), { recursive: true })
-    execFileSync('go', ['build', '-o', `bin/sshworkbench${suffix}`, './cmd/sshworkbench'], {
+    execFileSync('go', ['build', '-o', `bin/sshw${suffix}`, './cmd/sshw'], {
       cwd: root,
       stdio: 'pipe',
       timeout: 180000,
@@ -126,9 +126,9 @@ export default async function setupE2E() {
     const dataDirectory = join(scratch, 'private')
     process.env.SSHWB_HOME = home
     process.env.SSHWB_DATA_DIR = dataDirectory
-    process.env.SSHWB_BINARY = join(root, `bin/sshworkbench${suffix}`)
+    process.env.SSHWB_BINARY = join(root, `bin/sshw${suffix}`)
     const started = await launch(
-      join(root, `bin/sshworkbench${suffix}`),
+      join(root, `bin/sshw${suffix}`),
       ['--listen', '127.0.0.1:0', '--data-dir', dataDirectory, '--no-browser'],
       /Open: (\S+)/,
       children,
