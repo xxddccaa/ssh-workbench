@@ -1,0 +1,271 @@
+/* SSH config import dialog. Scoped under .import-dialog so these rules win
+   over the shared stylesheet regardless of load order. */
+
+.modal:has(.import-dialog) {
+  width: min(920px, calc(100vw - 32px));
+}
+.import-dialog {
+  --import-warning: color-mix(in srgb, #d59a2c 70%, var(--text));
+}
+:root[data-theme='light'] .import-dialog {
+  --import-warning: color-mix(in srgb, #b07a1a 60%, var(--text));
+}
+.import-dialog code,
+.import-dialog .import-mono {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.import-dialog .import-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--strong);
+  font:
+    12px/1.6 'SFMono-Regular',
+    Consolas,
+    monospace;
+  resize: vertical;
+  outline: none;
+}
+.import-dialog .import-textarea:focus {
+  border-color: var(--accent);
+}
+.import-dialog .import-textarea::placeholder {
+  color: var(--dim);
+}
+.import-dialog .choice-row {
+  flex-wrap: wrap;
+}
+.import-dialog .choice {
+  min-width: 150px;
+}
+.import-dialog .import-actions {
+  display: flex;
+  gap: 9px;
+}
+
+.import-dialog .import-preview {
+  gap: 14px;
+}
+.import-dialog .import-summary-line {
+  font-size: 12px;
+  color: var(--text);
+}
+.import-dialog .import-file-diagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.import-dialog .import-file-diagnostics > strong {
+  font-size: 11px;
+  font-weight: 550;
+  color: var(--muted);
+}
+.import-dialog .import-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.import-dialog .import-toolbar > span {
+  margin-right: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.import-dialog .import-table-wrap {
+  max-height: 340px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.import-dialog .import-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.import-dialog .import-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--dim);
+  font-size: 10px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+.import-dialog .import-table tbody th,
+.import-dialog .import-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: top;
+}
+.import-dialog .import-table td:first-child {
+  width: 34px;
+  padding-top: 10px;
+}
+.import-dialog .import-alias {
+  font-weight: 550;
+  color: var(--strong);
+  word-break: break-all;
+}
+.import-dialog .import-mono {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text);
+  word-break: break-all;
+}
+.import-dialog .import-note {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.import-dialog .import-row-disabled .import-alias,
+.import-dialog .import-row-disabled .import-mono {
+  color: var(--muted);
+}
+.import-dialog .import-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+.import-dialog .import-badges .subtle-badge {
+  white-space: nowrap;
+}
+.import-dialog .import-badge-blocked {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger), transparent 60%);
+  background: var(--danger-bg);
+}
+.import-dialog .import-badge-warning {
+  color: var(--import-warning);
+  border-color: color-mix(in srgb, var(--import-warning), transparent 55%);
+}
+.import-dialog .import-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.import-dialog .import-toggle:hover {
+  background: var(--surface-hover);
+  color: var(--strong);
+}
+.import-dialog .import-toggle.blocked {
+  color: var(--danger);
+}
+.import-dialog .import-toggle.warning {
+  color: var(--import-warning);
+}
+.import-dialog .import-detail-row td {
+  background: color-mix(in srgb, var(--bg), transparent 30%);
+}
+
+.import-dialog .import-diagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.import-dialog .import-diagnostic {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.import-dialog .import-diagnostic.blocked {
+  border-color: color-mix(in srgb, var(--danger), transparent 65%);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.import-dialog .import-diagnostic.warning {
+  border-color: color-mix(in srgb, var(--import-warning), transparent 60%);
+  background: color-mix(in srgb, var(--import-warning) 9%, var(--bg));
+  color: var(--import-warning);
+}
+.import-dialog .import-level {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.import-dialog .import-diagnostic code {
+  margin-right: 2px;
+  font-weight: 600;
+  color: inherit;
+}
+.import-dialog .import-diagnostic small {
+  display: block;
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.import-dialog .import-result {
+  gap: 16px;
+}
+.import-dialog .import-result-heading {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 550;
+  color: var(--muted);
+}
+.import-dialog .import-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.import-dialog .import-result-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 12px;
+}
+.import-dialog .import-result-list strong {
+  font-weight: 550;
+  color: var(--strong);
+}
+.import-dialog .import-result-list li > span:not(.subtle-badge) {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Keep the import action reachable while a long preview scrolls. */
+.modal:has(.import-dialog) .modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--bg) 35%, var(--surface));
+}

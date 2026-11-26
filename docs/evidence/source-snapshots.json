@@ -1,0 +1,166 @@
+{
+  "lookup_date": "2026-11-25",
+  "recorded_at": "2026-11-25T18:08:04+08:00",
+  "note": "Shallow default-branch clones for static review only; not installed, built, or executed. Source commits are not necessarily release tags.",
+  "snapshots": [
+    {
+      "directory": "motty",
+      "source": "https://github.com/t8y2/motty.git",
+      "commit": "06778e318148e48736a1529abafb46f8edd7013c",
+      "commit_date": "2026-11-25T16:52:54+08:00",
+      "local_path": "references/motty",
+      "reviewed_paths": [
+        "README.zh-CN.md",
+        "LICENSE",
+        "go.mod",
+        "internal/sshconn/hostkey.go",
+        "internal/sshconn/agentdial_windows.go"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "ssh-app",
+      "source": "https://github.com/uiff/ssh-app.git",
+      "commit": "a2ae0d9d9a469904a1028b7ed809338571e8e823",
+      "commit_date": "2026-10-13T22:47:39Z",
+      "local_path": "references/ssh-app",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE",
+        "go.mod",
+        "internal/server/ws.go",
+        "internal/term/term.go",
+        "web/static/js/terminal.js"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "sshwifty",
+      "source": "https://github.com/nirui/sshwifty.git",
+      "commit": "5606c9d63658fbf9d9103c9732a59cbf629bbd7f",
+      "commit_date": "2026-11-24T14:03:41+08:00",
+      "local_path": "references/sshwifty",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE.md",
+        "application/controller/socket.go",
+        "application/configuration/server.go"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "Termix",
+      "source": "https://github.com/Termix-SSH/Termix.git",
+      "commit": "c43f799d72db2253b24568cc581cf95b8a7a18c3",
+      "commit_date": "2026-11-21T08:46:33-06:00",
+      "local_path": "references/Termix",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE",
+        "package.json",
+        "packages/plugin-sdk",
+        "src/backend/plugins"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "waveterm",
+      "source": "https://github.com/wavetermdev/waveterm.git",
+      "commit": "9f1c9670d407be3b93cf090319a63ef30bf54d0e",
+      "commit_date": "2026-10-05T10:14:35-07:00",
+      "local_path": "references/waveterm",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE",
+        "pkg/blockcontroller/blockcontroller.go",
+        "pkg/web/ws.go",
+        "pkg/shellexec"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "filebrowser",
+      "source": "https://github.com/filebrowser/filebrowser.git",
+      "commit": "833d908884d5c801f30f5c098d7977177eb3a36b",
+      "commit_date": "2026-07-28T07:53:06+02:00",
+      "local_path": "references/filebrowser",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "shellcove",
+      "source": "https://github.com/huoguoji/shellcove.git",
+      "commit": "e5c2390561b2b97240c072546500c35b555d463d",
+      "commit_date": "2026-09-28T12:06:08+08:00",
+      "local_path": "references/shellcove",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE",
+        "web/package.json",
+        "internal/ssh/ssh.go"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "webssh",
+      "source": "https://github.com/bifrost0x/webssh.git",
+      "commit": "84e2d0f593668d6b5eda921042d40a5d301e80ad",
+      "commit_date": "2026-11-24T17:46:28+01:00",
+      "local_path": "references/webssh",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE",
+        "app",
+        "requirements.in"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "Plugin-SSH-Terminal",
+      "source": "https://github.com/Termix-SSH/Plugin-SSH-Terminal.git",
+      "commit": "f719e78ea83037eeeb12a0e24158d23f68440216",
+      "commit_date": "2026-11-22T13:37:28Z",
+      "local_path": "references/Plugin-SSH-Terminal",
+      "reviewed_paths": [
+        "README.md",
+        "LICENSE",
+        "src/backend/live-sessions.ts",
+        "src/backend/shell-cwd.ts",
+        "src/shared/terminal-settings.ts"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    },
+    {
+      "directory": "xterm.js",
+      "source": "https://github.com/xtermjs/xterm.js.git",
+      "commit": "da9919caf847c319f8aa250aec52dd6d433a7731",
+      "commit_date": "2026-11-25T00:54:25-05:00",
+      "local_path": "references/xterm.js",
+      "reviewed_paths": [
+        "package.json",
+        "src/common/InputHandler.ts",
+        "src/common/input/TextDecoder.test.ts",
+        "src/browser/CoreBrowserTerminal.ts"
+      ],
+      "review_type": "static-source-and-documentation",
+      "application_executed": false
+    }
+  ],
+  "legacy_project": {
+    "path": "references/xterm-file-manager",
+    "commit": "d6a732fe79312011419e932b65c108e787143a22",
+    "read_only": true
+  }
+}

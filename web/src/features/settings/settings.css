@@ -1,0 +1,422 @@
+/* Settings dialog. Selectors are scoped under .settings-layout so they win
+   over the shared stylesheet regardless of load order. */
+
+.modal:has(.settings-layout) {
+  width: min(880px, calc(100vw - 32px));
+}
+.settings-layout {
+  display: grid;
+  grid-template-columns: 172px minmax(0, 1fr);
+  height: min(640px, calc(100dvh - 220px));
+  min-height: 300px;
+}
+
+.settings-layout .settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 10px;
+  border-right: 1px solid var(--border-soft);
+  background: color-mix(in srgb, var(--bg), transparent 55%);
+  overflow-y: auto;
+}
+.settings-layout .settings-nav [role='tab'] {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: left;
+  outline-offset: -2px;
+}
+.settings-layout .settings-nav [role='tab']:hover {
+  background: var(--surface-hover);
+  color: var(--strong);
+}
+.settings-layout .settings-nav [role='tab'].selected {
+  background: var(--accent-dark);
+  color: var(--accent);
+  font-weight: 550;
+}
+
+.settings-layout .settings-pane {
+  padding: 22px 24px 30px;
+  overflow-y: auto;
+  gap: 18px;
+  outline-offset: -2px;
+}
+/* The pane scrolls; its children must keep their natural height. */
+.settings-layout .settings-pane > * {
+  flex-shrink: 0;
+}
+.settings-layout .settings-heading h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--strong);
+}
+.settings-layout .settings-heading p {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.settings-layout h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--strong);
+}
+.settings-layout code,
+.settings-layout kbd,
+.settings-layout pre {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+.settings-layout :not(pre) > code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+  color: var(--strong);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+}
+
+/* A row with a description on the left and a control on the right. */
+.settings-layout .settings-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.settings-layout .settings-field > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.settings-layout .settings-field strong {
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--text);
+}
+.settings-layout .settings-field span {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.settings-layout .settings-field > .button {
+  flex-shrink: 0;
+}
+.settings-layout .settings-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-layout .settings-stepper output {
+  min-width: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--strong);
+  font-size: 12px;
+}
+.settings-layout input.settings-number {
+  width: 120px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.settings-layout .settings-fieldset legend {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+.settings-layout .settings-cursor-sample {
+  display: inline-block;
+  width: 9px;
+  height: 14px;
+}
+.settings-layout .settings-cursor-sample.bar {
+  width: 2px;
+  background: currentColor;
+}
+.settings-layout .settings-cursor-sample.block {
+  background: currentColor;
+  opacity: 0.75;
+}
+.settings-layout .settings-cursor-sample.underline {
+  height: 2px;
+  margin-top: 12px;
+  background: currentColor;
+}
+.settings-layout .settings-state {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.settings-layout .settings-state.on {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent), transparent 60%);
+}
+
+/* Keyboard shortcuts */
+.settings-layout .settings-keys-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 -10px;
+}
+.settings-layout .settings-keys {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.settings-layout .settings-keys th,
+.settings-layout .settings-keys td {
+  padding: 7px 6px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: middle;
+}
+.settings-layout .settings-keys thead th {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--dim);
+}
+.settings-layout .settings-keys tbody th {
+  font-weight: 450;
+  color: var(--text);
+  white-space: nowrap;
+}
+.settings-layout .settings-keys tr.recording > * {
+  background: color-mix(in srgb, var(--accent-dark), transparent 35%);
+}
+.settings-layout .settings-key-value {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.settings-layout kbd {
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface-raised);
+  color: var(--strong);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.settings-layout .settings-unbound,
+.settings-layout .settings-default {
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.settings-layout .settings-recording {
+  font-size: 11px;
+  color: var(--accent);
+}
+.settings-layout .settings-key-error {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--danger);
+}
+.settings-layout .settings-key-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+/* Vault */
+.settings-layout .settings-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-layout .settings-vault-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+}
+.settings-layout .settings-block {
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--bg), transparent 50%);
+}
+.settings-layout .settings-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.settings-layout .settings-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.settings-layout .settings-option {
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.settings-layout .settings-option.selected {
+  border-color: color-mix(in srgb, var(--accent), transparent 40%);
+  background: color-mix(in srgb, var(--accent-dark), transparent 30%);
+}
+.settings-layout .settings-option input[type='radio'] {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  margin: 3px 0 0;
+  padding: 0;
+  accent-color: var(--accent);
+}
+.settings-layout .settings-option > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.settings-layout .settings-option strong {
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--strong);
+}
+.settings-layout .settings-option small {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.settings-layout .settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+.settings-layout .settings-inline-link {
+  padding: 0;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.settings-layout .settings-subform {
+  gap: 14px;
+  padding: 14px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.settings-layout .settings-credentials {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.settings-layout .settings-credentials li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.settings-layout .settings-credentials li:last-child {
+  border-bottom: 0;
+}
+.settings-layout .settings-credentials li > svg {
+  color: var(--accent);
+}
+.settings-layout .settings-credentials li > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.settings-layout .settings-credentials strong {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.settings-layout .settings-credentials span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.settings-layout .settings-danger {
+  border-color: color-mix(in srgb, var(--danger), transparent 70%);
+}
+.settings-layout .settings-danger-copy {
+  font-size: 11px;
+  line-height: 1.9;
+  color: var(--danger);
+}
+
+/* Shell integration */
+.settings-layout .settings-snippet {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.settings-layout .settings-snippet header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px 8px 13px;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface);
+}
+.settings-layout .settings-snippet header strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--strong);
+}
+.settings-layout .settings-snippet header strong span {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.settings-layout .settings-snippet pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre;
+  outline-offset: -2px;
+  user-select: text;
+}
+.settings-layout .settings-snippet-error {
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 11px;
+  line-height: 1.7;
+}

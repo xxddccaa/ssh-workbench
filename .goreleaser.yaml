@@ -1,0 +1,38 @@
+# Release builds with GoReleaser (https://goreleaser.com). Requires a git
+# repository with a tag; `make dist` produces equivalent archives without git.
+version: 2
+project_name: sshworkbench
+before:
+  hooks:
+    - npm ci --prefix web
+    - npm run build --prefix web
+    - node scripts/notices.mjs
+builds:
+  - id: sshworkbench
+    main: ./cmd/sshworkbench
+    binary: sshworkbench
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - THIRD_PARTY_NOTICES.md
+      - docs/*.md
+checksum:
+  name_template: SHA256SUMS
+  algorithm: sha256
+snapshot:
+  version_template: '{{ incpatch .Version }}-snapshot'

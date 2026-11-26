@@ -1,0 +1,8 @@
+{
+  "lookup_date": "2026-11-25",
+  "source": "https://api.github.com/repos/xtermjs/xterm.js/releases/latest",
+  "tag_name": "6.0.0",
+  "published_at": "2025-12-22T13:59:51Z",
+  "html_url": "https://github.com/xtermjs/xterm.js/releases/tag/6.0.0",
+  "note": "Latest release returned by GitHub at lookup time; the separately cloned default branch is not the pinned implementation dependency."
+}

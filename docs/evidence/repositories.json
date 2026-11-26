@@ -1,0 +1,168 @@
+{
+  "lookup_date": "2026-11-25",
+  "timezone": "Asia/Shanghai",
+  "method": "GitHub REST repository metadata, authenticated read-only gh API requests",
+  "note": "Stars and pushed_at are lookup-time metadata, not quality scores or release dates. License metadata is not a per-file legal audit.",
+  "repositories": [
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "Security-focused, self-hosted SSH and SFTP workspace for homelabs and teams - multi-user, passkeys, OIDC, encrypted keys, backups, and offline-ready.",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-11-25T08:48:45Z",
+      "repository": "bifrost0x/webssh",
+      "stars": 340,
+      "url": "https://github.com/bifrost0x/webssh"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "SSH workspace, SFTP, and terminals in one",
+      "license": "GPL-3.0",
+      "pushed_at": "2026-11-25T09:34:33Z",
+      "repository": "binaricat/Netcatty",
+      "stars": 7574,
+      "url": "https://github.com/binaricat/Netcatty"
+    },
+    {
+      "archived": false,
+      "default_branch": "master",
+      "description": "Free and open-sourced terminal/ssh/sftp/ftp/telnet/serialport/RDP/VNC/Spice client(Linux, Mac, Windows, Android, HarmonyOS, iOS)",
+      "license": "MIT",
+      "pushed_at": "2026-11-25T09:12:27Z",
+      "repository": "electerm/electerm",
+      "stars": 15709,
+      "url": "https://github.com/electerm/electerm"
+    },
+    {
+      "archived": false,
+      "default_branch": "master",
+      "description": "A terminal for a more modern age",
+      "license": "MIT",
+      "pushed_at": "2026-11-25T04:03:27Z",
+      "repository": "Eugeny/tabby",
+      "stars": 75577,
+      "url": "https://github.com/Eugeny/tabby"
+    },
+    {
+      "archived": true,
+      "default_branch": "master",
+      "description": "File Browser provides a file managing interface within a specified directory and it can be used to upload, delete, preview and edit your files.",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-07-31T10:06:58Z",
+      "repository": "filebrowser/filebrowser",
+      "stars": 35833,
+      "url": "https://github.com/filebrowser/filebrowser"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "The open source server management software for SSH, VNC & RDP",
+      "license": "MIT",
+      "pushed_at": "2026-11-25T07:13:58Z",
+      "repository": "gnmyt/Nexterm",
+      "stars": 5152,
+      "url": "https://github.com/gnmyt/Nexterm"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "Self-hosted web terminal manager: multi-session SSH terminal, SFTP with resumable uploads, jump host / proxy chains, multi-user RBAC, session recording & audit. Single Go binary, no CGO.",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-09-28T04:06:39Z",
+      "repository": "huoguoji/shellcove",
+      "stars": 0,
+      "url": "https://github.com/huoguoji/shellcove"
+    },
+    {
+      "archived": false,
+      "default_branch": "master",
+      "description": "A professional cross-platform SSH/Sftp/Shell/Telnet/Tmux/Serial terminal.",
+      "license": null,
+      "pushed_at": "2025-03-11T19:12:09Z",
+      "repository": "kingToolbox/WindTerm",
+      "stars": 32739,
+      "url": "https://github.com/kingToolbox/WindTerm"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "SSHYard is a native desktop SSH / SFTP client for macOS, Windows and Linux, bringing terminals, file management and AI assistance into one app. | SSHYard 是一款跨平台桌面 SSH / SFTP 客户端，支持 macOS、Windows 和 Linux，搭配 AI Agent以及更多工具帮助您提升效率",
+      "license": "AGPL-3.0",
+      "pushed_at": "2026-11-25T02:12:58Z",
+      "repository": "Licoy/sshyard",
+      "stars": 321,
+      "url": "https://github.com/Licoy/sshyard"
+    },
+    {
+      "archived": false,
+      "default_branch": "master",
+      "description": "Web SSH & Telnet (WebSSH & WebTelnet client) 🔮",
+      "license": "AGPL-3.0",
+      "pushed_at": "2026-11-24T06:16:20Z",
+      "repository": "nirui/sshwifty",
+      "stars": 3130,
+      "url": "https://github.com/nirui/sshwifty"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "A modern remote terminal workspace",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-11-25T09:01:08Z",
+      "repository": "nyakang/nyaterm",
+      "stars": 2623,
+      "url": "https://github.com/nyakang/nyaterm"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "功能强大，Go 实现的一个WebSSH，支持文件上传下载",
+      "license": "MIT",
+      "pushed_at": "2025-07-19T16:31:37Z",
+      "repository": "o8oo8o/WebSSH",
+      "stars": 387,
+      "url": "https://github.com/o8oo8o/WebSSH"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "SSH, SFTP, port forwarding, VNC/RDP and an AI assistant、MCP in one native window — a Go desktop app built on Viva, with no webview.",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-11-25T08:52:55Z",
+      "repository": "t8y2/motty",
+      "stars": 1847,
+      "url": "https://github.com/t8y2/motty"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "Self-hosted, plugin-based server management.",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-11-25T05:44:32Z",
+      "repository": "Termix-SSH/Termix",
+      "stars": 16115,
+      "url": "https://github.com/Termix-SSH/Termix"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "Keyway: self-hosted web SSH & VNC client with SFTP, encrypted vault and offline command help. Desktop and phone, one container, no cloud.",
+      "license": "MIT",
+      "pushed_at": "2026-10-13T22:47:41Z",
+      "repository": "uiff/ssh-app",
+      "stars": 2,
+      "url": "https://github.com/uiff/ssh-app"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "description": "An open-source, AI-integrated, cross-platform terminal for seamless workflows",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-11-24T08:54:13Z",
+      "repository": "wavetermdev/waveterm",
+      "stars": 22739,
+      "url": "https://github.com/wavetermdev/waveterm"
+    }
+  ]
+}

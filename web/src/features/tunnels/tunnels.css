@@ -1,0 +1,85 @@
+.transfer-drawer.tunnel-drawer {
+  height: 248px;
+  max-height: 42vh;
+}
+.tunnel-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.tunnel-location {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+.tunnel-location svg {
+  color: var(--accent);
+}
+.tunnel-drawer .transfer-empty {
+  gap: 8px;
+  padding: 0 24px;
+  text-align: center;
+  line-height: 1.8;
+}
+.tunnel-row .transfer-description small + small {
+  margin-top: 4px;
+}
+.transfer-description small.tunnel-stats {
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+.transfer-description small.tunnel-error {
+  color: var(--danger);
+}
+.transfer-label.tunnel-state-label {
+  width: 52px;
+}
+.tunnel-state-label.running {
+  color: var(--accent);
+}
+.tunnel-state-label.failed {
+  color: var(--danger);
+}
+.tunnel-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.tunnel-actions .button.small {
+  min-width: 64px;
+}
+
+.tunnel-form select {
+  min-width: 0;
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: var(--strong);
+  transition: border-color 0.15s;
+}
+.tunnel-form select:focus {
+  border-color: var(--accent);
+}
+.form-row.tunnel-target-row {
+  grid-template-columns: 1fr 120px;
+}
+.tunnel-preview {
+  font:
+    11px/1.7 'SFMono-Regular',
+    Consolas,
+    monospace;
+  color: var(--text);
+  padding: 9px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}

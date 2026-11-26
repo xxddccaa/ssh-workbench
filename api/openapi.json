@@ -1,0 +1,3030 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SSH Workbench API",
+    "version": "0.2.0",
+    "description": "Same-origin, single-owner API. Every write and WebSocket upgrade requires an exact Origin. Protected writes additionally require X-CSRF-Token, obtained from the authenticated /auth response. SSH credentials are used in memory unless the owner explicitly saves them into the encrypted vault; responses never contain secrets. Connections are asynchronous attempts that may ask for host-key confirmation or keyboard-interactive answers. Byte streaming is specified separately in terminal-protocol.md."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "localSession": []
+    },
+    {
+      "remoteSession": []
+    }
+  ],
+  "paths": {
+    "/api/v1/auth": {
+      "get": {
+        "operationId": "authState",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthState"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/bootstrap": {
+      "post": {
+        "operationId": "bootstrap",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthState"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BootstrapRequest"
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "login",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthState"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "responses": {
+          "204": {
+            "description": "Success; no response body"
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/hosts": {
+      "get": {
+        "operationId": "listHosts",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HostProfile"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createHost",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostProfile"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HostInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/hosts/{hostID}": {
+      "parameters": [
+        {
+          "name": "hostID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "updateHost",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostProfile"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HostInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteHost",
+        "responses": {
+          "204": {
+            "description": "Success; no response body"
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/terminals": {
+      "get": {
+        "operationId": "listTerminals",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TerminalInfo"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        }
+      }
+    },
+    "/api/v1/terminals/{terminalID}": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "delete": {
+        "operationId": "closeTerminal",
+        "responses": {
+          "204": {
+            "description": "Success; no response body"
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/terminals/{terminalID}/files": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listFiles",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileListing"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "mutateFile",
+        "responses": {
+          "204": {
+            "description": "Success; no response body"
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Mutation"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/terminals/{terminalID}/document": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "readDocument",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Document"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "saveDocument",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Document"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Document"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/terminals/{terminalID}/upload": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "uploadFile",
+        "responses": {
+          "201": {
+            "description": "Success; no response body"
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "File name, or a \"/\"-separated relative path for folder uploads; every segment must be a plain name."
+          },
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/terminals/{terminalID}/download": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "downloadFile",
+        "responses": {
+          "200": {
+            "description": "Streaming download with RFC-compatible Content-Disposition; no JS Blob buffering",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/attempts": {
+      "post": {
+        "operationId": "startAttempt",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "202": {
+            "description": "Accepted; poll the attempt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attempt"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/attempts/{attemptID}": {
+      "parameters": [
+        {
+          "name": "attemptID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "waitAttempt",
+        "description": "Long-poll (≤25 s) until the version exceeds `after`.",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attempt"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "cancelAttempt",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "204": {
+            "description": "Success; no response body"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/attempts/{attemptID}/answer": {
+      "parameters": [
+        {
+          "name": "attemptID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "answerAttempt",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "204": {
+            "description": "Success; no response body"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptAnswer"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/terminals/{terminalID}/usage": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "treeUsage",
+        "description": "Counts a directory tree without following symlinks (≤10,000 entries, ≤32 levels).",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreeUsage"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/terminals/{terminalID}/archive": {
+      "parameters": [
+        {
+          "name": "terminalID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "downloadArchive",
+        "responses": {
+          "200": {
+            "description": "Streaming zip of a directory; symlinks are skipped",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/vault": {
+      "get": {
+        "operationId": "vaultStatus",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vault/setup": {
+      "post": {
+        "operationId": "setupVault",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultStatus"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultSetup"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/vault/unlock": {
+      "post": {
+        "operationId": "unlockVault",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultStatus"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultUnlock"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/vault/lock": {
+      "post": {
+        "operationId": "lockVault",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultStatus"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/vault/reset": {
+      "post": {
+        "operationId": "resetVault",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultStatus"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultReset"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/credentials": {
+      "get": {
+        "operationId": "listCredentials",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CredentialRecord"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCredential",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredentialRecord"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/credentials/{credentialID}": {
+      "parameters": [
+        {
+          "name": "credentialID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "delete": {
+        "operationId": "deleteCredential",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "204": {
+            "description": "Success; no response body"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/tunnels": {
+      "get": {
+        "operationId": "listTunnels",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tunnel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTunnel",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tunnel"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TunnelInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/tunnels/{tunnelID}": {
+      "parameters": [
+        {
+          "name": "tunnelID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "updateTunnel",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tunnel"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TunnelInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteTunnel",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "204": {
+            "description": "Success; no response body"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/tunnels/{tunnelID}/stop": {
+      "parameters": [
+        {
+          "name": "tunnelID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "stopTunnel",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "204": {
+            "description": "Success; no response body"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/snippets": {
+      "get": {
+        "operationId": "listSnippets",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Snippet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSnippet",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snippet"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SnippetInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/snippets/{snippetID}": {
+      "parameters": [
+        {
+          "name": "snippetID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "updateSnippet",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snippet"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SnippetInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteSnippet",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "204": {
+            "description": "Success; no response body"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/workspace": {
+      "get": {
+        "operationId": "getWorkspace",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "putWorkspace",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Workspace"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/ssh-config/hosts": {
+      "get": {
+        "operationId": "listSSHConfigHosts",
+        "description": "Reads ~/.ssh/config of the server user (following Include directives and symlinks). Nothing is modified.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHConfigHosts"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          }
+        }
+      }
+    },
+    "/api/v1/imports/ssh-config/preview": {
+      "post": {
+        "operationId": "previewSSHConfig",
+        "description": "local reads ~/.ssh/config of the server user (local mode only; Include limited to ~/.ssh). text parses uploaded content and never follows Include. Nothing is executed.",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportPreview"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportSource"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/imports/ssh-config/apply": {
+      "post": {
+        "operationId": "applySSHConfig",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportApply"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    },
+    "/api/v1/local-documents/{documentID}": {
+      "parameters": [
+        {
+          "name": "documentID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "readLocalDocument",
+        "description": "Local mode only. Identifiers are issued by `sshworkbench edit` over the OS-user-only control channel.",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalDocument"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveLocalDocument",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/Failure"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalDocument"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Document"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CSRF"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HostInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "hostname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": 22
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "password",
+              "key",
+              "agent",
+              "keyboard-interactive"
+            ]
+          },
+          "group": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "teal",
+              "blue",
+              "amber",
+              "rose"
+            ]
+          },
+          "favorite": {
+            "type": "boolean"
+          },
+          "production": {
+            "type": "boolean"
+          },
+          "jumpHostId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "proxyCommand": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "identityFile": {
+            "type": "string",
+            "maxLength": 1024,
+            "description": "Local mode only: a private key below ~/.ssh, e.g. ~/.ssh/id_ed25519. Read server-side, never returned."
+          },
+          "credentialId": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "name",
+          "hostname",
+          "port",
+          "username",
+          "authMode",
+          "group",
+          "color",
+          "favorite"
+        ]
+      },
+      "HostProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "hostname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": 22
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "password",
+              "key",
+              "agent",
+              "keyboard-interactive"
+            ]
+          },
+          "group": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "teal",
+              "blue",
+              "amber",
+              "rose"
+            ]
+          },
+          "favorite": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "production": {
+            "type": "boolean"
+          },
+          "jumpHostId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "proxyCommand": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "identityFile": {
+            "type": "string",
+            "maxLength": 1024,
+            "description": "Local mode only: a private key below ~/.ssh, e.g. ~/.ssh/id_ed25519. Read server-side, never returned."
+          },
+          "credentialId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "hostname",
+          "port",
+          "username",
+          "authMode",
+          "group",
+          "color",
+          "favorite",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Credentials": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "string",
+            "maxLength": 4096,
+            "writeOnly": true
+          },
+          "privateKey": {
+            "type": "string",
+            "maxLength": 262144,
+            "writeOnly": true
+          },
+          "passphrase": {
+            "type": "string",
+            "maxLength": 4096,
+            "writeOnly": true
+          }
+        },
+        "required": []
+      },
+      "AuthState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "authenticated": {
+            "type": "boolean"
+          },
+          "authRequired": {
+            "type": "boolean"
+          },
+          "remote": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "string"
+          },
+          "csrfToken": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "capabilities": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "localFiles": {
+                "type": "boolean"
+              },
+              "agent": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "localFiles",
+              "agent"
+            ]
+          }
+        },
+        "required": [
+          "authenticated",
+          "remote",
+          "version"
+        ]
+      },
+      "BootstrapRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "maxLength": 1024
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "TerminalInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hostId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "closed",
+              "exited",
+              "disconnected"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "exitCode": {
+            "type": "integer"
+          },
+          "exitSignal": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "hostId",
+          "name",
+          "status",
+          "createdAt"
+        ]
+      },
+      "FileEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "directory": {
+            "type": "boolean"
+          },
+          "symlink": {
+            "type": "boolean"
+          },
+          "accessible": {
+            "type": "boolean"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "name",
+          "path",
+          "size",
+          "directory",
+          "symlink",
+          "accessible",
+          "mode",
+          "modifiedAt"
+        ]
+      },
+      "FileListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileEntry"
+            }
+          }
+        },
+        "required": [
+          "path",
+          "entries"
+        ]
+      },
+      "Document": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "lineEnding": {
+            "type": "string",
+            "enum": [
+              "lf",
+              "crlf",
+              "mixed"
+            ]
+          },
+          "bom": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "path",
+          "content",
+          "version",
+          "lineEnding",
+          "bom"
+        ]
+      },
+      "Mutation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "mkdir",
+              "rename",
+              "delete",
+              "chmod"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "directory": {
+            "type": "boolean"
+          },
+          "recursive": {
+            "type": "boolean"
+          },
+          "mode": {
+            "type": "string",
+            "pattern": "^[0-7]{3,4}$"
+          },
+          "expected": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Entry count confirmed from /usage for a recursive delete"
+          }
+        },
+        "required": [
+          "operation",
+          "path"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {}
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/Error"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "TreeUsage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "files": {
+            "type": "integer"
+          },
+          "directories": {
+            "type": "integer"
+          },
+          "symlinks": {
+            "type": "integer"
+          },
+          "bytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unsupported": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "files",
+          "directories",
+          "symlinks",
+          "bytes",
+          "unsupported"
+        ]
+      },
+      "QuickConnectTarget": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "hostname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": 22
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "password",
+              "key",
+              "agent",
+              "keyboard-interactive"
+            ]
+          },
+          "identityFile": {
+            "type": "string",
+            "maxLength": 1024
+          },
+          "proxyCommand": {
+            "type": "string",
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "hostname"
+        ]
+      },
+      "AttemptRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "terminal",
+              "tunnel"
+            ]
+          },
+          "hostId": {
+            "type": "string"
+          },
+          "quickConnect": {
+            "$ref": "#/components/schemas/QuickConnectTarget"
+          },
+          "tunnelId": {
+            "type": "string"
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "cols": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 1000
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/Credentials"
+          },
+          "jumpCredentials": {
+            "$ref": "#/components/schemas/Credentials"
+          },
+          "useSaved": {
+            "type": "boolean"
+          },
+          "rememberLabel": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Save the target credentials in the vault after they authenticate"
+          }
+        },
+        "required": [
+          "purpose",
+          "credentials"
+        ]
+      },
+      "Question": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "echo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text",
+          "echo"
+        ]
+      },
+      "Prompt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "host-key",
+              "keyboard-interactive"
+            ]
+          },
+          "hop": {
+            "type": "string",
+            "enum": [
+              "target",
+              "jump"
+            ]
+          },
+          "host": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "algorithm": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "knownHosts": {
+            "type": "string",
+            "enum": [
+              "match",
+              "mismatch",
+              "absent"
+            ],
+            "description": "Read-only comparison with ~/.ssh/known_hosts in local mode; a hint, not trust"
+          },
+          "name": {
+            "type": "string"
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Question"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "hop",
+          "host"
+        ]
+      },
+      "LaunchResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "terminal": {
+            "$ref": "#/components/schemas/TerminalInfo"
+          },
+          "tunnel": {
+            "$ref": "#/components/schemas/Tunnel"
+          },
+          "warning": {
+            "type": "string"
+          }
+        },
+        "required": []
+      },
+      "Attempt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "terminal",
+              "tunnel"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "connecting",
+              "prompt",
+              "connected",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "prompt": {
+            "$ref": "#/components/schemas/Prompt"
+          },
+          "error": {
+            "$ref": "#/components/schemas/Error"
+          },
+          "result": {
+            "$ref": "#/components/schemas/LaunchResult"
+          }
+        },
+        "required": [
+          "id",
+          "purpose",
+          "state",
+          "version"
+        ]
+      },
+      "AttemptAnswer": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "promptId": {
+            "type": "string"
+          },
+          "accept": {
+            "type": "boolean"
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "maxItems": 8
+          }
+        },
+        "required": [
+          "promptId",
+          "accept"
+        ]
+      },
+      "VaultStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "keyring",
+              "password"
+            ]
+          },
+          "unlocked": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "initialized",
+          "unlocked"
+        ]
+      },
+      "VaultSetup": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "keyring",
+              "password"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 1024,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "VaultUnlock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "string",
+            "maxLength": 1024,
+            "writeOnly": true
+          }
+        },
+        "required": []
+      },
+      "VaultReset": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "confirm": {
+            "type": "string",
+            "enum": [
+              "DELETE ALL SAVED CREDENTIALS"
+            ]
+          }
+        },
+        "required": [
+          "confirm"
+        ]
+      },
+      "CredentialRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "password",
+              "key"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "kind",
+          "createdAt"
+        ]
+      },
+      "CredentialInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/Credentials"
+          }
+        },
+        "required": [
+          "label",
+          "credentials"
+        ]
+      },
+      "TunnelInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "hostId": {
+            "type": "string"
+          },
+          "listenHost": {
+            "type": "string",
+            "enum": [
+              "127.0.0.1",
+              "::1"
+            ]
+          },
+          "listenPort": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          },
+          "targetHost": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "targetPort": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          }
+        },
+        "required": [
+          "name",
+          "hostId",
+          "listenHost",
+          "listenPort",
+          "targetHost",
+          "targetPort"
+        ]
+      },
+      "TunnelStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "stopped",
+              "running",
+              "failed"
+            ]
+          },
+          "listen": {
+            "type": "string"
+          },
+          "activeConnections": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalConnections": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "bytesSent": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "bytesReceived": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error": {
+            "$ref": "#/components/schemas/Error"
+          }
+        },
+        "required": [
+          "state",
+          "activeConnections",
+          "totalConnections",
+          "bytesSent",
+          "bytesReceived"
+        ]
+      },
+      "Tunnel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "hostId": {
+            "type": "string"
+          },
+          "listenHost": {
+            "type": "string",
+            "enum": [
+              "127.0.0.1",
+              "::1"
+            ]
+          },
+          "listenPort": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          },
+          "targetHost": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "targetPort": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TunnelStatus"
+          }
+        },
+        "required": [
+          "name",
+          "hostId",
+          "listenHost",
+          "listenPort",
+          "targetHost",
+          "targetPort",
+          "id",
+          "createdAt",
+          "updatedAt",
+          "status"
+        ]
+      },
+      "SnippetInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "name",
+          "command",
+          "description"
+        ]
+      },
+      "Snippet": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "name",
+          "command",
+          "description",
+          "id",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Workspace": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "layout": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "split": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "columns",
+                  "rows",
+                  "grid"
+                ]
+              },
+              "tabs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "hostId": {
+                      "type": "string",
+                      "maxLength": 260
+                    }
+                  },
+                  "required": [
+                    "hostId"
+                  ]
+                },
+                "maxItems": 8
+              },
+              "sizes": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 8
+              }
+            },
+            "required": [
+              "split",
+              "tabs",
+              "sizes"
+            ]
+          },
+          "preferences": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fontSize": {
+                "type": "integer",
+                "minimum": 10,
+                "maximum": 28
+              },
+              "scrollback": {
+                "type": "integer",
+                "minimum": 500,
+                "maximum": 50000
+              },
+              "cursorStyle": {
+                "type": "string",
+                "enum": [
+                  "bar",
+                  "block",
+                  "underline"
+                ]
+              },
+              "keybindings": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 40
+                }
+              }
+            },
+            "required": [
+              "fontSize",
+              "scrollback",
+              "cursorStyle",
+              "keybindings"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "layout",
+          "preferences"
+        ]
+      },
+      "ImportSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "local",
+              "text"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 1048576
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "ImportDiagnostic": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warning",
+              "blocked"
+            ]
+          },
+          "directive": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "level",
+          "directive",
+          "message"
+        ]
+      },
+      "ImportJump": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hostname",
+          "port"
+        ]
+      },
+      "ImportCandidate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer"
+          },
+          "user": {
+            "type": "string"
+          },
+          "identityFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "identitiesOnly": {
+            "type": "boolean"
+          },
+          "useAgent": {
+            "type": "boolean"
+          },
+          "jump": {
+            "$ref": "#/components/schemas/ImportJump"
+          },
+          "proxyCommand": {
+            "type": "string"
+          },
+          "importable": {
+            "type": "boolean"
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportDiagnostic"
+            }
+          },
+          "existing": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "alias",
+          "hostname",
+          "port",
+          "user",
+          "identitiesOnly",
+          "useAgent",
+          "importable",
+          "diagnostics",
+          "existing"
+        ]
+      },
+      "SSHConfigHost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer"
+          },
+          "user": {
+            "type": "string"
+          },
+          "identityFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "identitiesOnly": {
+            "type": "boolean"
+          },
+          "useAgent": {
+            "type": "boolean"
+          },
+          "proxyCommand": {
+            "type": "string"
+          },
+          "jump": {
+            "$ref": "#/components/schemas/ImportJump"
+          },
+          "importable": {
+            "type": "boolean"
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportDiagnostic"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "alias",
+          "hostname",
+          "port",
+          "user",
+          "identitiesOnly",
+          "useAgent",
+          "importable",
+          "diagnostics"
+        ]
+      },
+      "SSHConfigHosts": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hosts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SSHConfigHost"
+            }
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportDiagnostic"
+            }
+          }
+        },
+        "required": [
+          "hosts",
+          "diagnostics"
+        ]
+      },
+      "ImportPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportCandidate"
+            }
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportDiagnostic"
+            }
+          }
+        },
+        "required": [
+          "candidates",
+          "diagnostics"
+        ]
+      },
+      "ImportApply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "local",
+              "text"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "minItems": 1,
+            "maxItems": 500
+          },
+          "group": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "source",
+          "aliases"
+        ]
+      },
+      "ImportResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "created": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HostProfile"
+            }
+          },
+          "skipped": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "alias": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "alias",
+                "reason"
+              ]
+            }
+          }
+        },
+        "required": [
+          "created",
+          "skipped"
+        ]
+      },
+      "LocalDocument": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "lineEnding": {
+            "type": "string",
+            "enum": [
+              "lf",
+              "crlf",
+              "mixed"
+            ]
+          },
+          "bom": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "content",
+          "version",
+          "lineEnding",
+          "bom"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "localSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sshwb_session",
+        "description": "Loopback-only HttpOnly SameSite=Strict cookie."
+      },
+      "remoteSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-sshwb_session",
+        "description": "HTTPS-only host-bound Secure HttpOnly SameSite=Strict cookie."
+      }
+    },
+    "parameters": {
+      "CSRF": {
+        "name": "X-CSRF-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "responses": {
+      "Failure": {
+        "description": "Structured failure. No password, private key or terminal content is included.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}
