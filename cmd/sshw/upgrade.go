@@ -85,6 +85,9 @@ func upgradeCommand(arguments []string) error {
 }
 
 func latestReleaseTag(client *http.Client, repo string) (string, error) {
+	if tag, err := latestReleaseTagFromRedirect(client, fmt.Sprintf("https://github.com/%s/releases/latest", repo)); err == nil && tag != "" {
+		return tag, nil
+	}
 	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", repo)
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -110,6 +113,55 @@ func latestReleaseTag(client *http.Client, repo string) (string, error) {
 		return "", fmt.Errorf("latest release tag not found")
 	}
 	return payload.TagName, nil
+}
+
+func latestReleaseTagFromRedirect(client *http.Client, latestURL string) (string, error) {
+	noRedirect := *client
+	noRedirect.CheckRedirect = func(*http.Request, []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+	request, err := http.NewRequest(http.MethodHead, latestURL, nil)
+	if err != nil {
+		return "", err
+	}
+	request.Header.Set("User-Agent", "sshw/"+version)
+	response, err := noRedirect.Do(request)
+	if err != nil {
+		return "", err
+	}
+	response.Body.Close()
+	if tag := tagFromReleaseURL(response.Header.Get("Location")); tag != "" {
+		return tag, nil
+	}
+	if response.StatusCode == http.StatusMethodNotAllowed {
+		request, err = http.NewRequest(http.MethodGet, latestURL, nil)
+		if err != nil {
+			return "", err
+		}
+		request.Header.Set("User-Agent", "sshw/"+version)
+		response, err = noRedirect.Do(request)
+		if err != nil {
+			return "", err
+		}
+		response.Body.Close()
+		if tag := tagFromReleaseURL(response.Header.Get("Location")); tag != "" {
+			return tag, nil
+		}
+	}
+	return "", fmt.Errorf("redirect tag not found in %s", latestURL)
+}
+
+func tagFromReleaseURL(location string) string {
+	const marker = "/releases/tag/"
+	idx := strings.Index(location, marker)
+	if idx < 0 {
+		return ""
+	}
+	tag := location[idx+len(marker):]
+	if q := strings.IndexAny(tag, "?#"); q >= 0 {
+		tag = tag[:q]
+	}
+	return strings.TrimSuffix(tag, "/")
 }
 
 func downloadBytes(client *http.Client, url string, limit int64) ([]byte, error) {

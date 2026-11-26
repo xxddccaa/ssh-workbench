@@ -49,3 +49,17 @@ func TestFindChecksumAndExtractBinary(t *testing.T) {
 		t.Fatalf("extract zip = %q, %v", gotZip, err)
 	}
 }
+
+func TestTagFromReleaseURL(t *testing.T) {
+	cases := map[string]string{
+		"https://github.com/xxddccaa/ssh-workbench/releases/tag/v0.3.0":           "v0.3.0",
+		"https://github.com/xxddccaa/ssh-workbench/releases/tag/v0.3.1/?utm=test": "v0.3.1",
+		"/xxddccaa/ssh-workbench/releases/tag/v1.0.0#top":                         "v1.0.0",
+		"https://github.com/xxddccaa/ssh-workbench/releases":                      "",
+	}
+	for input, want := range cases {
+		if got := tagFromReleaseURL(input); got != want {
+			t.Fatalf("tagFromReleaseURL(%q) = %q, want %q", input, got, want)
+		}
+	}
+}

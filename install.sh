@@ -91,11 +91,36 @@ case "$ARCH_RAW" in
     ;;
 esac
 
-if [ -z "$VERSION" ]; then
-  API_URL="https://api.github.com/repos/$REPO/releases/latest"
-  TAG="$(fetch_text "$API_URL" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)"
+resolve_latest_tag() {
+  LATEST_URL="https://github.com/$REPO/releases/latest"
+  TAG=""
+  if command -v curl >/dev/null 2>&1; then
+    FINAL_URL="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "$LATEST_URL" 2>/dev/null || true)"
+    if [ -z "$FINAL_URL" ]; then
+      FINAL_URL="$(curl -fsSL -o /dev/null -w '%{url_effective}' "$LATEST_URL" 2>/dev/null || true)"
+    fi
+    case "$FINAL_URL" in
+      */releases/tag/*)
+        TAG="${FINAL_URL##*/releases/tag/}"
+        TAG="${TAG%%\?*}"
+        TAG="${TAG%%#*}"
+        TAG="${TAG%/}"
+        ;;
+    esac
+  elif command -v wget >/dev/null 2>&1; then
+    TAG="$(wget --max-redirect=0 "$LATEST_URL" 2>&1 | sed -n 's/.*[Ll]ocation:.*\/releases\/tag\/\([^[:space:]\r?#]*\).*/\1/p' | head -n 1 || true)"
+  fi
   if [ -z "$TAG" ]; then
-    echo "Error: failed to resolve latest release tag from $API_URL" >&2
+    API_URL="https://api.github.com/repos/$REPO/releases/latest"
+    TAG="$(fetch_text "$API_URL" 2>/dev/null | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1 || true)"
+  fi
+  printf '%s' "$TAG"
+}
+
+if [ -z "$VERSION" ]; then
+  TAG="$(resolve_latest_tag)"
+  if [ -z "$TAG" ]; then
+    echo "Error: failed to resolve latest release tag from https://github.com/$REPO/releases/latest" >&2
     exit 1
   fi
 else
