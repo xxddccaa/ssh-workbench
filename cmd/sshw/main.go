@@ -24,7 +24,7 @@ import (
 	"sshworkbench/internal/logging"
 )
 
-var version = "0.4.0"
+var version = "0.4.1"
 
 func main() {
 	logging.Install(os.Stderr)
@@ -67,7 +67,7 @@ func run(arguments []string) error {
 	var config bootstrap.Config
 	var noBrowser bool
 	var foreground bool
-	flags.StringVar(&config.Listen, "listen", "127.0.0.1:7331", "HTTP listen address")
+	flags.StringVar(&config.Listen, "listen", "127.0.0.1:8622", "HTTP listen address")
 	flags.StringVar(&config.DataDir, "data-dir", defaultDataDirectory, "private application data directory")
 	flags.BoolVar(&config.Auth, "auth", false, "require bootstrap token or owner password authentication")
 	flags.BoolVar(&config.Remote, "remote", false, "enable authenticated HTTPS mode")

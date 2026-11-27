@@ -186,4 +186,4 @@ case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
   *) echo "Add $INSTALL_DIR to PATH: export PATH=\"$INSTALL_DIR:\$PATH\"" ;;
 esac
-echo "Run 'sshw' to start (or 'sshw --listen 0.0.0.0:7331' for LAN/server deployment)."
+echo "Run 'sshw' to start (or 'sshw --listen 0.0.0.0:8622' for LAN/server deployment)."

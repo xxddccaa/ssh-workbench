@@ -27,7 +27,7 @@ sshw upgrade
 ## 快速使用
 
 ```sh
-# 本机启动（默认后台运行并自动打开浏览器，如 7331 被非 sshw 占用则自动顺延端口）
+# 本机启动（默认后台运行并自动打开浏览器，如 8622 被非 sshw 占用则自动顺延端口）
 sshw
 
 # 查看后台状态 / 停止后台服务 / 前台运行
@@ -36,10 +36,10 @@ sshw stop
 sshw --foreground
 
 # 局域网 / 服务器部署（监听所有网卡，HTTP 直接访问，不弹出登录拦截）
-sshw --listen 0.0.0.0:7331
+sshw --listen 0.0.0.0:8622
 
 # 如需后台无浏览器启动
-sshw --listen 0.0.0.0:7331 --no-browser
+sshw --listen 0.0.0.0:8622 --no-browser
 
 # 在本地终端中打开某个文本文件到浏览器 Monaco 编辑器
 sshw edit ./app.conf

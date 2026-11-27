@@ -11,7 +11,7 @@ import (
 func TestSecretsNeverReachLogOutput(test *testing.T) {
 	var output bytes.Buffer
 	logger := slog.New(New(slog.NewTextHandler(&output, nil)))
-	logger.Info("open http://127.0.0.1:7331/#bootstrap=abcDEF123_-",
+	logger.Info("open http://127.0.0.1:8622/#bootstrap=abcDEF123_-",
 		"password", "hunter2-secret",
 		"privateKey", "material",
 		slog.Group("request", "X-CSRF-Token", "csrf-value", "path", "/workspace"),

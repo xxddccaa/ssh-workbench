@@ -337,8 +337,8 @@ func TestDirectOpenAndSSHConfigAutoConnect(test *testing.T) {
 		test.Fatalf("unexpected direct-open auth state: %s", authBody)
 	}
 	request, _ := http.NewRequest("GET", fixture.server.URL+"/api/v1/hosts", nil)
-	request.Host = "localhost:7331"
-	request.Header.Set("Origin", "http://localhost:7331")
+	request.Host = "localhost:8622"
+	request.Header.Set("Origin", "http://localhost:8622")
 	resp, err := fixture.client.Do(request)
 	if err != nil {
 		test.Fatal(err)
